@@ -1,0 +1,16 @@
+{
+  "compilerOptions": {
+    "module": "Node16",
+    "target": "ESNext",
+    "outDir": "dist",
+    "lib": ["ESNext"],
+    "strict": true,
+    "esModuleInterop": true,
+    // "skipLibCheck": true,
+    "forceConsistentCasingInFileNames": true,
+    "removeComments": true,
+    // "resolveJsonModule": true,
+  },
+  "include": ["./src", "template"],
+  "exclude": ["node_modules"]
+}

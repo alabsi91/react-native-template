@@ -1,0 +1,51 @@
+{
+  "name": "react-native-template",
+  "version": "1.0.0",
+  "private": true,
+  "author": "Ahmed Alabsi <alabsi91@gmail.com>",
+  "license": "MIT",
+  "type": "module",
+  "description": "Create new React-Native template",
+  "bin": "dist/index.js",
+  "files": [
+    "dist"
+  ],
+  "scripts": {
+    "start:dev": "node scripts/start-dev.js",
+    "serve:build": "node dist/index.js",
+    "serve:bundle": "node bundle/index.cjs",
+    "build:js": "npx tsc",
+    "build:installer": "node --no-warnings scripts/build-installer.js",
+    "build:bundle": "npx esbuild src/index.ts --bundle --platform=node --target=node16 --outdir=bundle --out-extension:.js=.cjs --minify"
+  },
+  "dependencies": {
+    "chalk": "^5.0.1",
+    "gradient-string": "^2.0.1",
+    "inquirer": "^9.0.2",
+    "node-fetch": "^3.2.10"
+  },
+  "devDependencies": {
+    "@types/gradient-string": "^1.1.2",
+    "@types/inquirer": "^8.2.1",
+    "@typescript-eslint/eslint-plugin": "^5.30.7",
+    "@typescript-eslint/parser": "^5.30.7",
+    "esbuild": "^0.14.50",
+    "eslint": "^8.20.0",
+    "typescript": "^4.7.4"
+  },
+  "eslintConfig": {
+    "root": true,
+    "ignorePatterns": [
+      "*.js"
+    ],
+    "parser": "@typescript-eslint/parser",
+    "plugins": [
+      "@typescript-eslint"
+    ],
+    "extends": [
+      "eslint:recommended",
+      "plugin:@typescript-eslint/eslint-recommended",
+      "plugin:@typescript-eslint/recommended"
+    ]
+  }
+}
