@@ -221,6 +221,18 @@ export async function editIndexJs(templateName: string) {
   await fs.writeFile(indexPath, newStr, { encoding: 'utf-8' });
 }
 
+/** - Edit `tsconfig.json` file */
+export async function edit_tsconfigJson(templateName: string) {
+  const tsPath = path.join(templateName, 'tsconfig.json');
+  const newStr = `{
+  "extends": "@tsconfig/react-native/tsconfig.json",
+  "compilerOptions": {
+    "types": ["react-native"]
+  }
+}`;
+  await fs.writeFile(tsPath, newStr, { encoding: 'utf-8' });
+}
+
 /** - Copy file from template folder for web platform */
 export async function webScript(templateName: string) {
   config.babelPlugins.unshift(

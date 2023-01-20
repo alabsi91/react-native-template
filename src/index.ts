@@ -23,6 +23,7 @@ import {
   askForPreInstalledLibs,
   addAppjs,
   installWindows,
+  edit_tsconfigJson,
 } from './methods.js';
 import config from './template.config.js';
 
@@ -131,6 +132,13 @@ async function app() {
     await editIndexJs(inputs.name);
   } catch (error) {
     loading.error('Error while editing "index.js" !!');
+  }
+
+  // * edit "tsconfig.json"
+  try {
+    await edit_tsconfigJson(inputs.name);
+  } catch (error) {
+    loading.error('Error while editing "tsconfig.json" !!');
   }
 
   // * applying web script
