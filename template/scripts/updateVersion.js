@@ -16,7 +16,7 @@ function ask(query) {
 }
 
 (async function () {
-  const toUpdate = await ask(chalk.yellow('❔ Do you want to update app version ? ') + chalk.cyan('[y/n] : '));
+  const toUpdate = await ask(chalk.yellow('❔ Do you want to update app version ? ') + chalk.cyan('[y/N] : '));
   if (toUpdate === 'y') await updateAppVersion();
   process.exit(0);
 })();

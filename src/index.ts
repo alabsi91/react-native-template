@@ -9,22 +9,20 @@ import util from 'util';
 import { progress } from './helpers.js';
 import {
   askForInstallingDeps,
-  askForLang,
   askForPlatforms,
   askForProjectName,
   copyScripts,
-  addTsConfig,
   addBabelConfig,
   editIndexJs,
   editPackageJson,
   enableSeparateBuild,
   installDependencies,
-  language,
   OS,
   runVSCode,
   webScript,
   askForPreInstalledLibs,
   addAppjs,
+  installWindows,
 } from './methods.js';
 import config from './template.config.js';
 
@@ -46,7 +44,6 @@ async function app() {
   // * get user inputs
   const inputs = {
     name: await askForProjectName(),
-    lang: await askForLang(),
     platforms: await askForPlatforms(),
     preLibs: await askForPreInstalledLibs(),
     installDependencies: await askForInstallingDeps(),
@@ -67,7 +64,7 @@ async function app() {
 
   const loading = progress('Downloading ...');
   try {
-    await cmd(`npx react-native init "${inputs.name}" --skip-install ${process.argv.slice(2).join(' ')}`);
+    await cmd(`npx -y react-native init "${inputs.name}" --skip-install ${process.argv.slice(2).join(' ')}`);
   } catch (error) {
     loading.error('Error while downloaing template !!');
   }
@@ -103,7 +100,7 @@ async function app() {
 
   // * edit "package.json'
   try {
-    await editPackageJson(inputs.name, inputs.lang, inputs.platforms);
+    await editPackageJson(inputs.name, inputs.platforms);
   } catch (error) {
     loading.error('Error while editing "package.json" !!');
   }
@@ -122,9 +119,9 @@ async function app() {
     loading.error('Error while deleting files !!');
   }
 
-  // * add "App.js/tsx"
+  // * add "App.tsx"
   try {
-    await addAppjs(inputs.name, inputs.lang);
+    await addAppjs(inputs.name);
   } catch (error) {
     loading.error('Error while adding "App.js" file !!');
   }
@@ -134,15 +131,6 @@ async function app() {
     await editIndexJs(inputs.name);
   } catch (error) {
     loading.error('Error while editing "index.js" !!');
-  }
-
-  // * add "tsconfig.json" file
-  if (inputs.lang === language.TypeScript) {
-    try {
-      await addTsConfig(inputs.name);
-    } catch (error) {
-      loading.error('Error while adding "tsconfig.json" !!');
-    }
   }
 
   // * applying web script
@@ -169,6 +157,17 @@ async function app() {
       await installDependencies(inputs.name);
     } catch (error) {
       loading.error('Error while installing dependencies !!');
+    }
+  }
+
+  // * run windows script
+  if (inputs.platforms.includes(OS.Windows)) {
+    loading.start('Applying settings for Windows platform ...');
+
+    try {
+      await installWindows(inputs.name);
+    } catch (error) {
+      loading.error('Error while applying settings for Windows platform !!');
     }
   }
 

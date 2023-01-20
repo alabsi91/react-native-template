@@ -1,26 +1,13 @@
-const fs = require('fs');
-const path = require('path');
 const { exec } = require('child_process');
 const inquirer = require('inquirer');
+const path = require('path');
 const util = require('util');
-const execPromise = util.promisify(exec);
 const chalk = require('chalk');
-
-const args = process.argv.slice(2);
-const variant = args.includes('--debug') ? '.debug' : '';
-
-const buildGradlePath = path.join('android', 'app', 'build.gradle');
-const file = fs.readFileSync(buildGradlePath, { encoding: 'utf-8' });
-let packageName = /applicationId (?<package>.*)/.exec(file)?.groups?.package;
-
-if (!packageName) {
-  console.log(chalk.red("\n⛔ Couldn't find the"), chalk.cyan('package name'), chalk.red('!!'));
-  process.exit(1);
-}
-
-packageName = packageName.replaceAll("'", '') + variant;
+const execPromise = util.promisify(exec);
 
 const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'platform-tools', 'adb') : 'adb';
+const args = process.argv.slice(2);
+const cache = args.includes('--reset-cache') ? ' --reset-cache' : '';
 
 (async function () {
   let devices;
@@ -50,22 +37,27 @@ const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'plat
       },
     ]);
 
-    devices = [deviceName];  }
+    devices = [deviceName];
+  }
+
+  // set tcp
+  try {
+    await execPromise(`"${adb}" -s ${devices[0]} reverse tcp:8081 tcp:8081`);
+  } catch (error) {
+    console.log(chalk.red("\n⛔ Couldn't set tcp !!\n"));
+    console.log('⛔', chalk.red(error.stderr));
+    process.exit(1);
+  }
 
   try {
-    console.log(
-      chalk.yellow('\n🚀 Starting'),
-      chalk.cyan(packageName),
-      chalk.yellow('in your device'),
-      chalk.cyan(`(${devices[0]})`),
-      chalk.yellow('...\n')
-    );
-    await execPromise(`"${adb}" -s ${devices[0]} shell monkey -p ${packageName} 1"`);
+    execPromise('start react-native start' + cache);
+    await new Promise(resolve => setTimeout(resolve, 2000));
+    process.exit(0);
   } catch (error) {
     console.log(chalk.red('\n⛔ Something went wrong !!'));
     console.log('⛔', chalk.red(error.stderr));
     process.exit(1);
   }
 
-  console.log(chalk.green('✅ Done!\n'));
+  console.log(chalk.green('\n✅ Done!\n'));
 })();

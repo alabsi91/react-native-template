@@ -1,4 +1,5 @@
 const { exec } = require('child_process');
+const inquirer = require('inquirer');
 const { existsSync } = require('fs');
 const path = require('path');
 const util = require('util');
@@ -6,16 +7,6 @@ const chalk = require('chalk');
 const execPromise = util.promisify(exec);
 
 const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'platform-tools', 'adb') : 'adb';
-
-const args = process.argv.slice(2);
-const variant = args.includes('--debug') ? 'debug' : 'release';
-
-const pathToBuild = path.join(__dirname, `../android/app/build/outputs/apk/${variant}`);
-
-if (args.includes('--help')) {
-  console.log(chalk.cyan('   --debug'), chalk.yellow('       install the debug variant.'));
-  process.exit(0);
-}
 
 (async function () {
   let devices;
@@ -35,10 +26,33 @@ if (args.includes('--help')) {
     process.exit(1);
   }
 
+  const { variantName } = await inquirer.prompt([
+    {
+      type: 'list',
+      name: 'variantName',
+      message: 'Choose a variant :',
+      choices: ['debug', 'release'],
+    },
+  ]);
+
+  let variant = variantName ?? 'release';
+  const pathToBuild = path.join(__dirname, `../android/app/build/outputs/apk/${variant}`);
+
   if (devices.length > 1) {
-    console.log(chalk.yellow('Found more than 2 devices, using', chalk.cyan(devices[0])));
+    console.log(chalk.yellow('Found more than 1 device'));
+    const { deviceName } = await inquirer.prompt([
+      {
+        type: 'list',
+        name: 'deviceName',
+        message: 'Choose a device :',
+        choices: devices,
+      },
+    ]);
+
+    devices = [deviceName];
   }
 
+  // get device architecture
   try {
     const { stdout } = await execPromise(`"${adb}" -s ${devices[0]} shell getprop ro.product.cpu.abi devices`);
     apkName = `app-${stdout.trim()}-${variant}.apk`;
@@ -56,7 +70,13 @@ if (args.includes('--help')) {
   }
 
   try {
-    console.log(chalk.yellow('\n⬇️ Installing the'), chalk.cyan(variant), chalk.yellow('variant in your device ...\n'));
+    console.log(
+      chalk.yellow('\n ⬇️ Installing the'),
+      chalk.cyan(variant),
+      chalk.yellow('variant in your device'),
+      chalk.cyan(`(${devices[0]})`),
+      chalk.yellow('...\n')
+    );
     await execPromise(`"${adb}" -s ${devices[0]} install -r ${apkName}`, { cwd: pathToBuild });
   } catch (error) {
     console.log(chalk.red('\n⛔ Something went wrong !!'));

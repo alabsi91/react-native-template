@@ -10,15 +10,11 @@ import chalk from 'chalk';
 
 const cmd = util.promisify(exec);
 
-export enum language {
-  JavaScript = 'JavaScript',
-  TypeScript = 'TypeScript',
-}
-
 export enum OS {
   Android = 'Android',
   IOS = 'IOS',
   Web = 'Web',
+  Windows = 'Windows',
 }
 
 type packageJsonType = {
@@ -51,26 +47,9 @@ export async function askForProjectName() {
   return name;
 }
 
-/** - Ask the user for the template used language */
-export async function askForLang() {
-  type answersT = { lang: language };
-
-  const { lang } = await inquirer.prompt<answersT>([
-    {
-      type: 'list',
-      name: 'lang',
-      default: 'JavaScript',
-      choices: ['JavaScript', 'TypeScript'],
-      message: 'Please choose the template language : ',
-    },
-  ]);
-
-  return lang;
-}
-
 /** - Ask the user which platforms to include */
 export async function askForPlatforms() {
-  type answersT = { platforms: [OS.Android, OS.IOS, OS.Web] };
+  type answersT = { platforms: [OS.Android, OS.IOS, OS.Web, OS.Windows] };
 
   const { platforms } = await inquirer.prompt<answersT>([
     {
@@ -81,6 +60,7 @@ export async function askForPlatforms() {
         { checked: true, name: OS.Android },
         { checked: false, name: OS.IOS },
         { checked: false, name: OS.Web },
+        { checked: false, name: OS.Windows },
       ],
       message: 'Please choose the template platforms : ',
     },
@@ -132,18 +112,10 @@ export async function copyScripts(templateName: string) {
   for (const file of scripts) await fs.copyFile(path.join(fromPath, file), path.join(toPath, file));
 }
 
-/** - Download `tsconfig` file to the new template folder */
-export async function addTsConfig(templateName: string) {
-  const fromPath = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'tsconfig.json');
-  const toPath = path.join(templateName, 'tsconfig.json');
-
-  await fs.copyFile(fromPath, toPath);
-}
-
 /** - Add `App.tsx` file to the new template folder */
-export async function addAppjs(templateName: string, lang: language) {
+export async function addAppjs(templateName: string) {
   const fromPath = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'App.js');
-  const toPath = path.join(templateName, 'src', lang === language.TypeScript ? 'App.tsx' : 'App.js');
+  const toPath = path.join(templateName, 'src', 'App.tsx');
   const srcPath = path.join(templateName, 'src');
   if (!existsSync(srcPath)) await fs.mkdir(srcPath);
   await fs.copyFile(fromPath, toPath);
@@ -158,7 +130,7 @@ export async function getPkgVersion(pkg: string) {
 }
 
 /** - Edit `package.json` file */
-export async function editPackageJson(templateName: string, lang: language, platforms: OS[]) {
+export async function editPackageJson(templateName: string, platforms: OS[]) {
   const packageJsonPath = path.join(templateName, 'package.json');
   const packageJson = await fs.readFile(packageJsonPath, { encoding: 'utf-8' });
   const json = JSON.parse(packageJson) as packageJsonType;
@@ -199,15 +171,6 @@ export async function editPackageJson(templateName: string, lang: language, plat
     const pkg = dep[0],
       ver = dep[1];
     json.devDependencies[pkg] = ver === 'latest' ? await getPkgVersion(pkg) : ver;
-  }
-
-  // * add TS deps
-  if (lang === language.TypeScript) {
-    for (const dep of config.ts_dev_deps_to_add) {
-      const pkg = dep[0],
-        ver = dep[1];
-      json.devDependencies[pkg] = ver === 'latest' ? await getPkgVersion(pkg) : ver;
-    }
   }
 
   // * add web deps
@@ -292,6 +255,11 @@ export async function enableSeparateBuild(templateName: string) {
     .replace(/\/\/.*/g, '') // remove inline comments
     .replace(/\n{3,}|(\s*\n){3,}/g, '\n'); // remove extra spaces
   await fs.writeFile(pathToGardle, newStr, { encoding: 'utf-8' });
+}
+
+/** - Run windows platform script */
+export async function installWindows(templateName: string) {
+  await cmd('npx -y react-native-windows-init --overwrite', { cwd: templateName });
 }
 
 /** - Install npm dependencies */
