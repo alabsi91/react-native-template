@@ -21,9 +21,11 @@ import {
   runVSCode,
   webScript,
   askForPreInstalledLibs,
-  addAppjs,
+  addAppTsx,
   installWindows,
   edit_tsconfigJson,
+  removeJest,
+  askForKeepingJest,
 } from './methods.js';
 import config from './template.config.js';
 
@@ -47,8 +49,11 @@ async function app() {
     name: await askForProjectName(),
     platforms: await askForPlatforms(),
     preLibs: await askForPreInstalledLibs(),
+    keepJest: await askForKeepingJest(),
     installDependencies: await askForInstallingDeps(),
   };
+
+  const configuration = inputs.keepJest ? config : removeJest(config);
 
   // add deps for react-navigation if included
   if (inputs.preLibs.includes('react-navigation')) {
@@ -57,17 +62,18 @@ async function app() {
     inputs.preLibs.push('react-native-safe-area-context');
   }
 
-  if (inputs.preLibs.includes('react-native-reanimated')) config.babelPlugins.push('react-native-reanimated/plugin');
+  if (inputs.preLibs.includes('react-native-reanimated')) configuration.babelPlugins.push('react-native-reanimated/plugin');
 
   // * add choosen libs to template_configs
   const libs = inputs.preLibs.map(lib => [lib, 'latest']);
-  config.dep_to_add.push(...libs);
+  configuration.dep_to_add.push(...libs);
 
   const loading = progress('Downloading ...');
   try {
     await cmd(`npx -y react-native init "${inputs.name}" --skip-install ${process.argv.slice(2).join(' ')}`);
   } catch (error) {
-    loading.error('Error while downloaing template !!');
+    loading.error('Error while downloaing the template !!');
+    process.exit(1);
   }
 
   loading.start('Applying settings ...');
@@ -107,9 +113,9 @@ async function app() {
   }
 
   // * delete files
-  let to_delete = config.delete;
-  if (!inputs.platforms.includes(OS.Android)) to_delete = to_delete.concat(config.delete_android);
-  if (!inputs.platforms.includes(OS.IOS)) to_delete = to_delete.concat(config.delete_ios);
+  let to_delete = configuration.delete;
+  if (!inputs.platforms.includes(OS.Android)) to_delete = to_delete.concat(configuration.delete_android);
+  if (!inputs.platforms.includes(OS.IOS)) to_delete = to_delete.concat(configuration.delete_ios);
   try {
     for (const file of to_delete) {
       const filePath = path.join(inputs.name, file);
@@ -122,9 +128,9 @@ async function app() {
 
   // * add "App.tsx"
   try {
-    await addAppjs(inputs.name);
+    await addAppTsx(inputs.name);
   } catch (error) {
-    loading.error('Error while adding "App.js" file !!');
+    loading.error('Error while adding "App.tsx" file !!');
   }
 
   // * edit "index.js"
@@ -136,7 +142,7 @@ async function app() {
 
   // * edit "tsconfig.json"
   try {
-    await edit_tsconfigJson(inputs.name);
+    await edit_tsconfigJson(JSON.stringify(configuration.tsconfig, null, 2), inputs.name);
   } catch (error) {
     loading.error('Error while editing "tsconfig.json" !!');
   }

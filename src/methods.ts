@@ -27,7 +27,7 @@ type packageJsonType = {
 };
 
 /** Ask the user for the template project name */
-export async function askForProjectName() {
+export async function askForProjectName(): Promise<string> {
   type answersT = { name: string };
 
   const { name } = await inquirer.prompt<answersT>([
@@ -39,9 +39,16 @@ export async function askForProjectName() {
     },
   ]);
 
+  try {
+    validateProjectName(name);
+  } catch (error) {
+    console.log('\n⛔', chalk.red.bold(error), '\n');
+    return askForProjectName();
+  }
+
   if (existsSync(name)) {
-    console.log(chalk.red(`\n⛔ "${name}" directory already exists !!\n`));
-    process.exit(1);
+    console.log(chalk.red.bold(`\n⛔ "${name}" directory already exists !!\n`));
+    return askForProjectName();
   }
 
   return name;
@@ -85,6 +92,22 @@ export async function askForInstallingDeps() {
   return installDeps;
 }
 
+/** - Ask the user if to keep jest */
+export async function askForKeepingJest() {
+  type answersT = { keepJest: boolean };
+
+  const { keepJest } = await inquirer.prompt<answersT>([
+    {
+      type: 'confirm',
+      name: 'keepJest',
+      default: false,
+      message: 'Do you want to keep jest : ',
+    },
+  ]);
+
+  return keepJest;
+}
+
 /** - Ask the user for pre-installed libraries */
 export async function askForPreInstalledLibs() {
   type answersT = { libs: string[] };
@@ -113,8 +136,8 @@ export async function copyScripts(templateName: string) {
 }
 
 /** - Add `App.tsx` file to the new template folder */
-export async function addAppjs(templateName: string) {
-  const fromPath = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'App.js');
+export async function addAppTsx(templateName: string) {
+  const fromPath = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'App.tsx');
   const toPath = path.join(templateName, 'src', 'App.tsx');
   const srcPath = path.join(templateName, 'src');
   if (!existsSync(srcPath)) await fs.mkdir(srcPath);
@@ -222,15 +245,9 @@ export async function editIndexJs(templateName: string) {
 }
 
 /** - Edit `tsconfig.json` file */
-export async function edit_tsconfigJson(templateName: string) {
+export async function edit_tsconfigJson(tsConfig: string, templateName: string) {
   const tsPath = path.join(templateName, 'tsconfig.json');
-  const newStr = `{
-  "extends": "@tsconfig/react-native/tsconfig.json",
-  "compilerOptions": {
-    "types": ["react-native"]
-  }
-}`;
-  await fs.writeFile(tsPath, newStr, { encoding: 'utf-8' });
+  await fs.writeFile(tsPath, tsConfig, { encoding: 'utf-8' });
 }
 
 /** - Copy file from template folder for web platform */
@@ -282,4 +299,96 @@ export async function installDependencies(templateName: string) {
 /** - Open `VSCode` */
 export async function runVSCode(templateName: string) {
   await cmd('code .', { cwd: templateName });
+}
+
+/** - Change config file to remove jest */
+export function removeJest(configFile: typeof config) {
+  configFile.delete.push('__tests__');
+
+  config.deps_to_remove.push('jest');
+  config.deps_to_remove.push('babel-jest');
+  config.deps_to_remove.push('react-test-renderer');
+  config.deps_to_remove.push('@types/jest');
+  config.deps_to_remove.push('@types/react-test-renderer');
+
+  const typeIndex = config.tsconfig.compilerOptions.types.indexOf('jest');
+  config.tsconfig.compilerOptions.types.splice(typeIndex, 1);
+
+  const scriptIndex = config.scripts.findIndex(e => e[1] === 'jest');
+  config.scripts.splice(scriptIndex, 1);
+
+  return config;
+}
+
+const NAME_REGEX = /^[$A-Z_][0-9A-Z_$]*$/i;
+
+// ref: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
+const javaKeywords = [
+  'abstract',
+  'continue',
+  'for',
+  'new',
+  'switch',
+  'assert',
+  'default',
+  'goto',
+  'package',
+  'synchronized',
+  'boolean',
+  'do',
+  'if',
+  'private',
+  'this',
+  'break',
+  'double',
+  'implements',
+  'protected',
+  'throw',
+  'byte',
+  'else',
+  'import',
+  'public',
+  'throws',
+  'case',
+  'enum',
+  'instanceof',
+  'return',
+  'transient',
+  'catch',
+  'extends',
+  'int',
+  'short',
+  'try',
+  'char',
+  'final',
+  'interface',
+  'static',
+  'void',
+  'class',
+  'finally',
+  'long',
+  'strictfp',
+  'volatile',
+  'const',
+  'float',
+  'native',
+  'super',
+  'while',
+];
+
+const reservedNames = ['react', 'react-native', ...javaKeywords];
+
+export function validateProjectName(name: string) {
+  if (!String(name).match(NAME_REGEX)) {
+    throw new Error(`"${name}" is not a valid name for a project. Please use a valid identifier name (alphanumeric).`);
+  }
+
+  const lowerCaseName = name.toLowerCase();
+  if (reservedNames.includes(lowerCaseName)) {
+    throw new Error(`Not a valid name for a project. Please do not use the reserved word "${lowerCaseName}".`);
+  }
+
+  if (name.match(/helloworld/gi)) {
+    throw new Error('Project name shouldn\'t contain "HelloWorld" name in it, because it is CLI\'s default placeholder name.');
+  }
 }

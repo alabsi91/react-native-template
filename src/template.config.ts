@@ -1,11 +1,12 @@
 const config = {
-  delete: ['__tests__', '.prettierrc.js', '.eslintrc.js', '.watchmanconfig', 'app.json', '.node-version', 'App.tsx'],
+  delete: ['.prettierrc.js', '.eslintrc.js', '.watchmanconfig', 'app.json', '.node-version', 'App.tsx'],
   delete_android: ['android', '.buckconfig'],
   delete_ios: ['ios', '.ruby-version', 'Gemfile'],
 
   scripts: [
     ['💻 dev-server', 'node scripts/startServer.js'],
     ['🔁 reset-cache', 'node scripts/startServer.js --reset-cache'],
+    ['🔎 test', 'jest'],
   ],
 
   scripts_android: [
@@ -61,7 +62,7 @@ const config = {
 
   babelPlugins: ['optional-require'],
 
-  deps_to_remove: ['jest', 'babel-jest', 'react-test-renderer', 'prettier', '@types/jest', '@types/react-test-renderer'],
+  deps_to_remove: ['prettier'],
 
   dep_to_add: [] as string[][],
 
@@ -73,7 +74,7 @@ const config = {
   ],
 
   web_deps: [
-    ['react-dom', '^17.0.2'],
+    ['react-dom', '18.1.0'],
     ['react-native-web', '^0.18.9'],
   ],
 
@@ -85,6 +86,13 @@ const config = {
     ['@expo/cli', 'latest'],
     ['@expo/webpack-config', 'latest'],
   ],
+
+  tsconfig: {
+    extends: '@tsconfig/react-native/tsconfig.json',
+    compilerOptions: {
+      types: ['react-native', 'jest'],
+    },
+  },
 };
 
 export default config;

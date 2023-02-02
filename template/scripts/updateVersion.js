@@ -12,12 +12,23 @@ const readline = require('readline').createInterface({
 function ask(query) {
   return new Promise(resolve => {
     readline.question(query, resolve);
+    setTimeout(resolve, 5000);
   });
 }
 
 (async function () {
   const toUpdate = await ask(chalk.yellow('❔ Do you want to update app version ? ') + chalk.cyan('[y/N] : '));
-  if (toUpdate === 'y') await updateAppVersion();
+  const yes = toUpdate === 'y';
+  console.log(chalk.yellow(`\n${yes ? '✅ Yes' : '❌ No'}\n`));
+  if (yes) await updateAppVersion();
+  console.log(
+    chalk.yellow('🔄 Checking for'),
+    chalk.cyan('`typescript`'),
+    chalk.yellow('and'),
+    chalk.cyan('`eslint`'),
+    chalk.yellow('errors ...\n')
+  );
+
   process.exit(0);
 })();
 
