@@ -24,6 +24,7 @@ type packageJsonType = {
   dependencies: { [key: string]: string };
   devDependencies: { [key: string]: string };
   eslintConfig: typeof config.eslint;
+  prettier: typeof config.prettier;
 };
 
 /** Ask the user for the template project name */
@@ -175,6 +176,9 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
 
   // * add eslint config
   json.eslintConfig = config.eslint;
+
+  // * add prettier config
+  json.prettier = config.prettier;
 
   // * remove deps
   for (const d of config.deps_to_remove) {

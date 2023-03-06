@@ -58,6 +58,7 @@ async function app() {
   // add deps for react-navigation if included
   if (inputs.preLibs.includes('react-navigation')) {
     inputs.preLibs.splice(inputs.preLibs.indexOf('react-navigation'), 1, '@react-navigation/native');
+    inputs.preLibs.push('@react-navigation/native-stack');
     inputs.preLibs.push('react-native-screens');
     inputs.preLibs.push('react-native-safe-area-context');
   }
@@ -85,15 +86,6 @@ async function app() {
     } catch (error) {
       loading.error('Error while Copying Scripts !!');
     }
-  }
-
-  // * copy 'metro.config.js' file
-  try {
-    const fromPath = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'metro.config.js');
-    const toPath = path.join(inputs.name, 'metro.config.js');
-    await fs.copyFile(fromPath, toPath);
-  } catch (error) {
-    loading.error('Error while Copying "metro.config.js" !!');
   }
 
   // * enabling Separate Builds for Android
@@ -183,6 +175,17 @@ async function app() {
     } catch (error) {
       loading.error('Error while applying settings for Windows platform !!');
     }
+  }
+
+  // * create empty folders and files
+  try {
+    await fs.mkdir(path.join(inputs.name, 'src', 'components'));
+    await fs.mkdir(path.join(inputs.name, 'src', 'screens'));
+    await fs.mkdir(path.join(inputs.name, 'src', 'helpers'));
+    await fs.mkdir(path.join(inputs.name, 'src', 'data'));
+    await fs.appendFile(path.join(inputs.name, 'src', 'types.ts'), '');
+  } catch (error) {
+    loading.error('Error while creating empty folders and files for the template !!');
   }
 
   // * run VSCode

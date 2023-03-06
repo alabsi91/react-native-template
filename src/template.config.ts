@@ -16,7 +16,7 @@ const config = {
     ['🧹 clean-build', 'cd android && .\\gradlew clean'],
     ['⬇️ install-apk', 'node scripts/installApk.js'],
     ['🚀 run-app', 'node scripts/startAppOnDevice.js'],
-    ['🔌 adb-wirless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555 -s 192.168.1.112:5555'],
+    ['🔌 adb-wirless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
   scripts_ios: [['🚀 ios', 'react-native run-ios']],
@@ -34,11 +34,22 @@ const config = {
       'react-native/no-unused-styles': 1,
       'react-native/no-inline-styles': 0,
       'react-hooks/exhaustive-deps': 0,
-      'prettier/prettier': 0,
+      'prettier/prettier': 1,
       'no-shadow': 0,
       'no-bitwise': 0,
       'jsx-quotes': 0,
     },
+  },
+
+  prettier: {
+    arrowParens: 'avoid',
+    printWidth: 130,
+    jsxSingleQuote: true,
+    semi: true,
+    bracketSpacing: true,
+    bracketSameLine: false,
+    endOfLine: 'auto',
+    singleQuote: true,
   },
 
   preLibs: [
@@ -48,11 +59,14 @@ const config = {
     'react-native-svg',
     'react-native-safe-area-context',
     'react-native-reanimated',
+    'react-native-mmkv',
     'react-native-linear-gradient',
     'react-native-gesture-handler',
     'react-native-device-info',
+    'react-native-bootsplash',
     'lottie-react-native',
     'firebase',
+    '@shopify/react-native-skia',
     '@shopify/flash-list',
     '@react-native-google-signin/google-signin',
     '@react-native-community/netinfo',
@@ -60,15 +74,14 @@ const config = {
     '@react-native-async-storage/async-storage',
   ],
 
-  babelPlugins: ['optional-require'],
+  babelPlugins: [] as string[],
 
-  deps_to_remove: ['prettier'],
+  deps_to_remove: [] as string[],
 
   dep_to_add: [] as string[][],
 
   dev_deps_to_add: [
     ['babel-plugin-transform-remove-console', 'latest'],
-    ['babel-plugin-optional-require', 'latest'],
     ['inquirer', '8.0.0'],
     ['chalk', '4.1.2'],
   ],
