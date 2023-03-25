@@ -53,7 +53,7 @@ async function app() {
     installDependencies: await askForInstallingDeps(),
   };
 
-  const configuration = inputs.keepJest ? config : removeJest(config);
+  const configuration = inputs.keepJest ? config : removeJest();
 
   // add deps for react-navigation if included
   if (inputs.preLibs.includes('react-navigation')) {
@@ -65,7 +65,7 @@ async function app() {
 
   if (inputs.preLibs.includes('react-native-reanimated')) configuration.babelPlugins.push('react-native-reanimated/plugin');
 
-  // * add choosen libs to template_configs
+  // * add chosen libs to template_configs
   const libs = inputs.preLibs.map(lib => [lib, 'latest']);
   configuration.dep_to_add.push(...libs);
 
@@ -73,7 +73,7 @@ async function app() {
   try {
     await cmd(`npx -y react-native init "${inputs.name}" --skip-install ${process.argv.slice(2).join(' ')}`);
   } catch (error) {
-    loading.error('Error while downloaing the template !!');
+    loading.error('Error while downloading the template !!');
     process.exit(1);
   }
 
@@ -134,7 +134,7 @@ async function app() {
 
   // * edit "tsconfig.json"
   try {
-    await edit_tsconfigJson(JSON.stringify(configuration.tsconfig, null, 2), inputs.name);
+    await edit_tsconfigJson(inputs.name);
   } catch (error) {
     loading.error('Error while editing "tsconfig.json" !!');
   }
@@ -181,9 +181,7 @@ async function app() {
   try {
     await fs.mkdir(path.join(inputs.name, 'src', 'components'));
     await fs.mkdir(path.join(inputs.name, 'src', 'screens'));
-    await fs.mkdir(path.join(inputs.name, 'src', 'helpers'));
-    await fs.mkdir(path.join(inputs.name, 'src', 'data'));
-    await fs.appendFile(path.join(inputs.name, 'src', 'types.ts'), '');
+    await fs.appendFile(path.join(inputs.name, 'src', 'types.d.ts'), '');
   } catch (error) {
     loading.error('Error while creating empty folders and files for the template !!');
   }

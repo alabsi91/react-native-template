@@ -16,7 +16,7 @@ const config = {
     ['🧹 clean-build', 'cd android && .\\gradlew clean'],
     ['⬇️ install-apk', 'node scripts/installApk.js'],
     ['🚀 run-app', 'node scripts/startAppOnDevice.js'],
-    ['🔌 adb-wirless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
+    ['🔌 adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
   scripts_ios: [['🚀 ios', 'react-native run-ios']],
@@ -33,7 +33,11 @@ const config = {
       curly: 0,
       'react-native/no-unused-styles': 1,
       'react-native/no-inline-styles': 0,
+      'react-native/no-single-element-style-arrays': 1,
+      'react-native/no-raw-text': 2,
       'react-hooks/exhaustive-deps': 0,
+      'object-shorthand': 1,
+      'require-await': 1,
       'prettier/prettier': 1,
       'no-shadow': 0,
       'no-bitwise': 0,
@@ -42,13 +46,13 @@ const config = {
   },
 
   prettier: {
-    arrowParens: 'avoid',
+    arrowParens: 'avoid' as const,
     printWidth: 130,
     jsxSingleQuote: true,
     semi: true,
     bracketSpacing: true,
     bracketSameLine: false,
-    endOfLine: 'auto',
+    endOfLine: 'auto' as const,
     singleQuote: true,
   },
 
@@ -82,6 +86,7 @@ const config = {
 
   dev_deps_to_add: [
     ['babel-plugin-transform-remove-console', 'latest'],
+    ['babel-plugin-module-resolver', 'latest'],
     ['inquirer', '8.0.0'],
     ['chalk', '4.1.2'],
   ],
@@ -104,6 +109,12 @@ const config = {
     extends: '@tsconfig/react-native/tsconfig.json',
     compilerOptions: {
       types: ['react-native', 'jest'],
+      baseUrl: '.',
+      paths: {
+        '@components/*': ['src/components/*'],
+        '@screens/*': ['src/screens/*'],
+        '@types': ['src/types'],
+      },
     },
   },
 };

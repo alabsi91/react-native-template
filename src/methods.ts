@@ -7,6 +7,7 @@ import path from 'path';
 import { exec } from 'child_process';
 import util from 'util';
 import chalk from 'chalk';
+import prettier from 'prettier';
 
 const cmd = util.promisify(exec);
 
@@ -36,7 +37,7 @@ export async function askForProjectName(): Promise<string> {
       type: 'input',
       name: 'name',
       default: 'myproject',
-      message: 'Please enter the new porject name : ',
+      message: 'Please enter the new project name : ',
     },
   ]);
 
@@ -215,8 +216,9 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
       json.devDependencies[pkg] = ver === 'latest' ? await getPkgVersion(pkg) : ver;
     }
   }
+  const formattedString = prettier.format(JSON.stringify(json), { ...config.prettier, parser: 'json' });
 
-  await fs.writeFile(packageJsonPath, JSON.stringify(json, null, 2), { encoding: 'utf-8' });
+  await fs.writeFile(packageJsonPath, formattedString, { encoding: 'utf-8' });
 }
 
 /** - Add `babel.config.js` to template */
@@ -225,14 +227,14 @@ export async function addBabelConfig(templateName: string) {
   const toPath = path.join(templateName, 'babel.config.js');
 
   const file = await fs.readFile(fromPath, { encoding: 'utf-8' });
-  const match = file.match(/plugins:\s?(\[.*\])/)?.[1];
+  const match = file.match(/plugins\s*=\s*(\[[\s\S]*\];)/)?.[1];
 
   if (!match) return console.log("\n⛔ Error while editing 'babel.config.js'");
 
-  const str: string[] = JSON.parse(match.replaceAll("'", '"'));
-  str.push(...config.babelPlugins);
+  const str = match.slice(0, -2) + config.babelPlugins.map(e => `'${e}'`).join(',') + '];';
+  const formattedString = prettier.format(file.replace(match, str), { ...config.prettier, parser: 'babel' });
 
-  await fs.writeFile(toPath, file.replace(match, JSON.stringify(str, null, 2)), { encoding: 'utf-8' });
+  await fs.writeFile(toPath, formattedString, { encoding: 'utf-8' });
 }
 
 /** - Edit `index.js` file */
@@ -243,15 +245,18 @@ export async function editIndexJs(templateName: string) {
     .replace("import {name as appName} from './app.json';", '')
     .replace('appName', `'${templateName}'`)
     .replace('./App', './src/App')
-    .replace(/\/\*\*[\s\S]*?\*\/\n/g, '') // remove comment blocks
-    .replace(/\n{3,}|(\s*\n){3,}/g, '\n\n'); // remove extra spaces
-  await fs.writeFile(indexPath, newStr, { encoding: 'utf-8' });
+    .replace(/\/\*\*[\s\S]*?\*\/\n/g, ''); // remove comment blocks
+
+  const formattedString = prettier.format(newStr, { ...config.prettier, parser: 'babel' });
+
+  await fs.writeFile(indexPath, formattedString, { encoding: 'utf-8' });
 }
 
 /** - Edit `tsconfig.json` file */
-export async function edit_tsconfigJson(tsConfig: string, templateName: string) {
+export async function edit_tsconfigJson(templateName: string) {
   const tsPath = path.join(templateName, 'tsconfig.json');
-  await fs.writeFile(tsPath, tsConfig, { encoding: 'utf-8' });
+  const formattedString = prettier.format(JSON.stringify(config.tsconfig), { ...config.prettier, parser: 'json' });
+  await fs.writeFile(tsPath, formattedString, { encoding: 'utf-8' });
 }
 
 /** - Copy file from template folder for web platform */
@@ -275,19 +280,22 @@ if (Platform.OS === 'web') {
   AppRegistry.runApplication('${templateName}', { rootTag });
 }
 `;
-  await fs.writeFile(indexPath, str, { encoding: 'utf-8' });
+
+  const formattedString = prettier.format(str, { ...config.prettier, parser: 'babel' });
+
+  await fs.writeFile(indexPath, formattedString, { encoding: 'utf-8' });
 }
 
-/** - Android enable separate build in garadle.build */
+/** - Android enable separate build in gradle.build */
 export async function enableSeparateBuild(templateName: string) {
-  const pathToGardle = path.join(templateName, 'android', 'app', 'build.gradle');
-  const fileStr = await fs.readFile(pathToGardle, { encoding: 'utf-8' });
+  const pathToGradle = path.join(templateName, 'android', 'app', 'build.gradle');
+  const fileStr = await fs.readFile(pathToGradle, { encoding: 'utf-8' });
   const newStr = fileStr
     .replace('def enableSeparateBuildPerCPUArchitecture = false', 'def enableSeparateBuildPerCPUArchitecture = true')
     .replace(/\/\*\*[\s\S]*?\*\/\n/g, '') // remove comment blocks
-    .replace(/\/\/.*/g, '') // remove inline comments
-    .replace(/\n{3,}|(\s*\n){3,}/g, '\n'); // remove extra spaces
-  await fs.writeFile(pathToGardle, newStr, { encoding: 'utf-8' });
+    .replace(/\/\/.*/g, ''); // remove inline comments
+
+  await fs.writeFile(pathToGradle, newStr, { encoding: 'utf-8' });
 }
 
 /** - Run windows platform script */
@@ -306,8 +314,8 @@ export async function runVSCode(templateName: string) {
 }
 
 /** - Change config file to remove jest */
-export function removeJest(configFile: typeof config) {
-  configFile.delete.push('__tests__');
+export function removeJest() {
+  config.delete.push('__tests__');
 
   config.deps_to_remove.push('jest');
   config.deps_to_remove.push('babel-jest');
