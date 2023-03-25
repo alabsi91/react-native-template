@@ -111,10 +111,12 @@ const config = {
       types: ['react-native', 'jest'],
       baseUrl: '.',
       paths: {
+        '@assets/*': ['src/assets/*'],
         '@components/*': ['src/components/*'],
         '@screens/*': ['src/screens/*'],
-        '@types': ['src/types'],
+        '@types': ['src/types.d.ts'],
       },
+      importsNotUsedAsValues: 'error',
     },
   },
 };

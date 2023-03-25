@@ -227,11 +227,11 @@ export async function addBabelConfig(templateName: string) {
   const toPath = path.join(templateName, 'babel.config.js');
 
   const file = await fs.readFile(fromPath, { encoding: 'utf-8' });
-  const match = file.match(/plugins\s*=\s*(\[[\s\S]*\];)/)?.[1];
+  const match = file.match(/plugins\s*=\s*\[((?:\[[^\]]*\]|[^[\]]*)*)\]/)?.[1];
 
   if (!match) return console.log("\n⛔ Error while editing 'babel.config.js'");
 
-  const str = match.slice(0, -2) + config.babelPlugins.map(e => `'${e}'`).join(',') + '];';
+  const str = match + config.babelPlugins.map(e => `'${e}'`).join(',');
   const formattedString = prettier.format(file.replace(match, str), { ...config.prettier, parser: 'babel' });
 
   await fs.writeFile(toPath, formattedString, { encoding: 'utf-8' });
@@ -292,8 +292,8 @@ export async function enableSeparateBuild(templateName: string) {
   const fileStr = await fs.readFile(pathToGradle, { encoding: 'utf-8' });
   const newStr = fileStr
     .replace('def enableSeparateBuildPerCPUArchitecture = false', 'def enableSeparateBuildPerCPUArchitecture = true')
-    .replace(/\/\*\*[\s\S]*?\*\/\n/g, '') // remove comment blocks
-    .replace(/\/\/.*/g, ''); // remove inline comments
+    .replace(/\s*\/\*[\s\S]*?\*\//gm, '') // remove comment blocks
+    .replace(/\s*\/\/.*$/gm, ''); // remove inline comments
 
   await fs.writeFile(pathToGradle, newStr, { encoding: 'utf-8' });
 }

@@ -179,6 +179,7 @@ async function app() {
 
   // * create empty folders and files
   try {
+    await fs.mkdir(path.join(inputs.name, 'src', 'assets'));
     await fs.mkdir(path.join(inputs.name, 'src', 'components'));
     await fs.mkdir(path.join(inputs.name, 'src', 'screens'));
     await fs.appendFile(path.join(inputs.name, 'src', 'types.d.ts'), '');
