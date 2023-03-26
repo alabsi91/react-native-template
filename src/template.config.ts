@@ -78,6 +78,7 @@ const config = {
     '@react-native-async-storage/async-storage',
   ],
 
+  babelPresets: ['module:metro-react-native-babel-preset'],
   babelPlugins: [] as string[],
 
   deps_to_remove: [] as string[],
@@ -105,6 +106,15 @@ const config = {
     ['@expo/webpack-config', 'latest'],
   ],
 
+  create_folders: ['src/assets', 'src/components', 'src/screens'],
+  create_files: [
+    {
+      path: 'src/Types.d.ts',
+      content:
+        "declare global {\n  declare module '*.png' {\n    const value: import('react-native').ImageSourcePropType;\n    export default value;\n  }\n}",
+    },
+  ],
+
   tsconfig: {
     extends: '@tsconfig/react-native/tsconfig.json',
     compilerOptions: {
@@ -114,7 +124,7 @@ const config = {
         '@assets/*': ['src/assets/*'],
         '@components/*': ['src/components/*'],
         '@screens/*': ['src/screens/*'],
-        '@types': ['src/types.d.ts'],
+        '@types': ['src/Types'],
       },
       importsNotUsedAsValues: 'error',
     },

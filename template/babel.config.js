@@ -13,7 +13,7 @@ module.exports = function (api) {
     alias[aliasName] = aliasPath.startsWith('./') ? aliasPath : './' + aliasPath;
   }
 
-  const presets = ['module:metro-react-native-babel-preset'];
+  const presets = [];
   const plugins = [
     [require.resolve('babel-plugin-module-resolver'), { alias }],
   ];

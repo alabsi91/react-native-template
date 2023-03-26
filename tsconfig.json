@@ -6,10 +6,8 @@
     "lib": ["ESNext"],
     "strict": true,
     "esModuleInterop": true,
-    // "skipLibCheck": true,
     "forceConsistentCasingInFileNames": true,
     "removeComments": true,
-    // "resolveJsonModule": true,
   },
   "include": ["./src", "template"],
   "exclude": ["node_modules"]

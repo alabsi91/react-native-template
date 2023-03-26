@@ -223,16 +223,33 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
 
 /** - Add `babel.config.js` to template */
 export async function addBabelConfig(templateName: string) {
+  type RegExpMatchArrayWithIndices = RegExpMatchArray & { indices: Array<[number, number]> };
+
   const fromPath = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'babel.config.js');
   const toPath = path.join(templateName, 'babel.config.js');
 
-  const file = await fs.readFile(fromPath, { encoding: 'utf-8' });
-  const match = file.match(/plugins\s*=\s*\[((?:\[[^\]]*\]|[^[\]]*)*)\]/)?.[1];
+  const regex = {
+    presets: /presets\s*=\s*\[(?<presets>(?:\[[^\]]*\]|[^[\]]*)*)\]/d,
+    plugins: /plugins\s*=\s*\[(?<plugins>(?:\[[^\]]*\]|[^[\]]*)*)\]/d,
+  };
 
-  if (!match) return console.log("\n⛔ Error while editing 'babel.config.js'");
+  let file = await fs.readFile(fromPath, { encoding: 'utf-8' });
 
-  const str = match + config.babelPlugins.map(e => `'${e}'`).join(',');
-  const formattedString = prettier.format(file.replace(match, str), { ...config.prettier, parser: 'babel' });
+  // match array contents without the brackets
+  const presetsMatch = regex.presets.exec(file) as RegExpMatchArrayWithIndices;
+  const pluginsMatch = regex.plugins.exec(file) as RegExpMatchArrayWithIndices;
+
+  if (typeof pluginsMatch?.groups?.plugins === 'string') {
+    const insertAt = pluginsMatch.indices[1][1];
+    file = file.slice(0, insertAt) + config.babelPlugins.map(e => `'${e}'`).join(',') + file.slice(insertAt);
+  }
+
+  if (typeof presetsMatch?.groups?.presets === 'string') {
+    const insertAt = presetsMatch.indices[1][1];
+    file = file.slice(0, insertAt) + config.babelPresets.map(e => `'${e}'`).join(',') + file.slice(insertAt);
+  }
+
+  const formattedString = prettier.format(file, { ...config.prettier, parser: 'babel' });
 
   await fs.writeFile(toPath, formattedString, { encoding: 'utf-8' });
 }

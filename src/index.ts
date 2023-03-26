@@ -177,12 +177,19 @@ async function app() {
     }
   }
 
-  // * create empty folders and files
+  // * create folders and files
   try {
-    await fs.mkdir(path.join(inputs.name, 'src', 'assets'));
-    await fs.mkdir(path.join(inputs.name, 'src', 'components'));
-    await fs.mkdir(path.join(inputs.name, 'src', 'screens'));
-    await fs.appendFile(path.join(inputs.name, 'src', 'types.d.ts'), '');
+    // create folders
+    for (let i = 0; i < config.create_folders.length; i++) {
+      const folderPath = path.join(inputs.name, config.create_folders[i]);
+      await fs.mkdir(folderPath);
+    }
+
+    // create files
+    for (let i = 0; i < config.create_files.length; i++) {
+      const { path: name, content } = config.create_files[i];
+      await fs.appendFile(path.join(inputs.name, name), content, { encoding: 'utf-8' });
+    }
   } catch (error) {
     loading.error('Error while creating empty folders and files for the template !!');
   }
