@@ -1,5 +1,5 @@
 const config = {
-  delete: ['.prettierrc.js', '.eslintrc.js', '.watchmanconfig', 'app.json', '.node-version', 'App.tsx'],
+  delete: ['.prettierrc.js', '.eslintrc.js', '.watchmanconfig', 'app.json', '_node-version', 'App.tsx'],
   delete_android: ['android', '.buckconfig'],
   delete_ios: ['ios', '.ruby-version', 'Gemfile'],
 
@@ -93,7 +93,7 @@ const config = {
   ],
 
   web_deps: [
-    ['react-dom', '18.1.0'],
+    ['react-dom', '18.2.0'],
     ['react-native-web', '^0.18.9'],
   ],
 
