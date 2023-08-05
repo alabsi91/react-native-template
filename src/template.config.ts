@@ -1,7 +1,7 @@
 const config = {
-  delete: ['.prettierrc.js', '.eslintrc.js', '.watchmanconfig', 'app.json', '_node-version', 'App.tsx'],
+  delete: ['.prettierrc.js', '.eslintrc.js', '.watchmanconfig', 'app.json', 'README.md', 'App.tsx'],
   delete_android: ['android', '.buckconfig'],
-  delete_ios: ['ios', '.ruby-version', 'Gemfile'],
+  delete_ios: ['ios', 'Gemfile'],
 
   scripts: [
     ['💻 dev-server', 'node scripts/startServer.js'],

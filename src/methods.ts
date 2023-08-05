@@ -308,7 +308,18 @@ export async function enableSeparateBuild(templateName: string) {
   const pathToGradle = path.join(templateName, 'android', 'app', 'build.gradle');
   const fileStr = await fs.readFile(pathToGradle, { encoding: 'utf-8' });
   const newStr = fileStr
-    .replace('def enableSeparateBuildPerCPUArchitecture = false', 'def enableSeparateBuildPerCPUArchitecture = true')
+    .replace(
+      'android {',
+      `android {
+    splits {
+        abi {
+            reset()
+            enable true
+            universalApk true
+            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
+        }
+    }`
+    )
     .replace(/\s*\/\*[\s\S]*?\*\//gm, '') // remove comment blocks
     .replace(/\s*\/\/.*$/gm, ''); // remove inline comments
 
@@ -333,6 +344,7 @@ export async function runVSCode(templateName: string) {
 /** - Change config file to remove jest */
 export function removeJest() {
   config.delete.push('__tests__');
+  config.delete.push('jest.config.js');
 
   config.deps_to_remove.push('jest');
   config.deps_to_remove.push('babel-jest');
