@@ -94,7 +94,7 @@ const config = {
 
   web_deps: [
     ['react-dom', '18.2.0'],
-    ['react-native-web', '^0.18.9'],
+    ['react-native-web', '^0.19.6'],
   ],
 
   web_dev_deps: [
