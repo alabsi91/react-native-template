@@ -28,7 +28,7 @@ const config = {
   ],
 
   eslint: {
-    extends: '@react-native-community',
+    extends: '@react-native',
     rules: {
       curly: 0,
       'react-native/no-unused-styles': 1,
