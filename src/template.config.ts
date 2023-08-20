@@ -12,7 +12,8 @@ const config = {
   scripts_android: [
     ['📱 emulator', 'node scripts/emulator.js'],
     ['📦 build-debug', 'cd android && .\\gradlew assembleDebug'],
-    ['📦 build-release', 'node scripts/updateVersion && cd android && .\\gradlew assembleRelease'],
+    ['📦 build-release', 'node scripts/updateVersion && eslint . && tsc && cd android && .\\gradlew assembleRelease'],
+    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.js'],
     ['🧹 clean-build', 'cd android && .\\gradlew clean'],
     ['⬇️ install-apk', 'node scripts/installApk.js'],
     ['🚀 run-app', 'node scripts/startAppOnDevice.js'],
