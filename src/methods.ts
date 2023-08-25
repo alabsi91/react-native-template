@@ -336,6 +336,25 @@ export async function installDependencies(templateName: string) {
   await cmd('npm i --force', { cwd: templateName });
 }
 
+/** - Fix for react native screens */
+export async function fixMainActivity(templateName: string) {
+  const pathJavaMain = path.join(templateName, 'android', 'app', 'src', 'main', 'java', 'com', templateName, 'MainActivity.java');
+  const fileStr = await fs.readFile(pathJavaMain, { encoding: 'utf-8' });
+  let newStr = fileStr.replace(/(^package.+)(\s)([\s\S]+)/, '$1\n\nimport android.os.Bundle;$3');
+  newStr = newStr.replace(
+    /(MainActivity extends ReactActivity[\s\S]+?{)(\s)([\s\S]+)/,
+    `$1
+
+  @Override
+  protected void onCreate(Bundle savedInstanceState) {
+    super.onCreate(null);
+  }
+$3`
+  );
+
+  await fs.writeFile(pathJavaMain, newStr, { encoding: 'utf-8' });
+}
+
 /** - Open `VSCode` */
 export async function runVSCode(templateName: string) {
   await cmd('code .', { cwd: templateName });

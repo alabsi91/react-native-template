@@ -26,6 +26,7 @@ import {
   edit_tsconfigJson,
   removeJest,
   askForKeepingJest,
+  fixMainActivity,
 } from './methods.js';
 import config from './template.config.js';
 
@@ -94,6 +95,15 @@ async function app() {
       await enableSeparateBuild(inputs.name);
     } catch (error) {
       loading.error('Error enabling Separate Builds for Android !!');
+    }
+  }
+
+  // * fixing MainActivity.java on Android
+  if (inputs.platforms.includes(OS.Android)) {
+    try {
+      await fixMainActivity(inputs.name);
+    } catch (error) {
+      loading.error('Error fixing MainActivity.java on Android !!');
     }
   }
 

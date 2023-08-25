@@ -11,11 +11,9 @@ const config = {
 
   scripts_android: [
     ['📱 emulator', 'node scripts/emulator.js'],
-    ['📦 build-debug', 'cd android && .\\gradlew assembleDebug'],
-    ['📦 build-release', 'node scripts/updateVersion && eslint . && tsc && cd android && .\\gradlew assembleRelease'],
-    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.js'],
-    ['🧹 clean-build', 'cd android && .\\gradlew clean'],
+    ['📦 build', 'node scripts/build.js'],
     ['⬇️ install-apk', 'node scripts/installApk.js'],
+    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.js'],
     ['🚀 run-app', 'node scripts/startAppOnDevice.js'],
     ['🔌 adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
