@@ -355,6 +355,15 @@ $3`
   await fs.writeFile(pathJavaMain, newStr, { encoding: 'utf-8' });
 }
 
+/** - Add kotlin version to build.gradle */
+export async function addKotlinVersion(templateName: string) {
+  const pathBuildGradle = path.join(templateName, 'android', 'build.gradle');
+  const fileStr = await fs.readFile(pathBuildGradle, { encoding: 'utf-8' });
+  const newStr = fileStr.replace(/(buildscript\s+{[\s\S]+?ext\s+{)(\s)([\s\S]+)/, '$1\n        kotlinVersion = "1.7.0"\n$3');
+
+  await fs.writeFile(pathBuildGradle, newStr, { encoding: 'utf-8' });
+}
+
 /** - Open `VSCode` */
 export async function runVSCode(templateName: string) {
   await cmd('code .', { cwd: templateName });

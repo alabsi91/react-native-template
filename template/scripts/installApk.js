@@ -62,7 +62,13 @@ const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'plat
     process.exit(1);
   }
 
-  const isApkExist = existsSync(path.join(pathToBuild, apkName));
+  let isApkExist = existsSync(path.join(pathToBuild, apkName));
+
+  // try another apk name
+  if(!isApkExist) {
+    apkName = `app-${variant}.apk`;
+    isApkExist = existsSync(path.join(pathToBuild, apkName));
+  }
 
   if (!isApkExist) {
     console.log(chalk.red("\n⛔ Couldn't find"), chalk.yellow(apkName), chalk.red('!!\n'));
@@ -73,7 +79,7 @@ const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'plat
     console.log(
       chalk.yellow('\n ⬇️ Installing the'),
       chalk.cyan(variant),
-      chalk.yellow('variant in your device'),
+      chalk.yellow('variant on your device'),
       chalk.cyan(`(${devices[0]})`),
       chalk.yellow('...\n')
     );

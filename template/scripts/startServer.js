@@ -52,7 +52,6 @@ const cache = args.includes('--reset-cache') ? ' --reset-cache' : '';
   try {
     execPromise('start react-native start' + cache);
     await new Promise(resolve => setTimeout(resolve, 2000));
-    process.exit(0);
   } catch (error) {
     console.log(chalk.red('\n⛔ Something went wrong !!'));
     console.log('⛔', chalk.red(error.stderr));

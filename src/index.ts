@@ -8,25 +8,26 @@ import path from 'path';
 import util from 'util';
 import { progress } from './helpers.js';
 import {
+  OS,
+  addAppTsx,
+  addBabelConfig,
+  addKotlinVersion,
   askForInstallingDeps,
+  askForKeepingJest,
   askForPlatforms,
+  askForPreInstalledLibs,
   askForProjectName,
   copyScripts,
-  addBabelConfig,
   editIndexJs,
   editPackageJson,
+  edit_tsconfigJson,
   enableSeparateBuild,
+  fixMainActivity,
   installDependencies,
-  OS,
+  installWindows,
+  removeJest,
   runVSCode,
   webScript,
-  askForPreInstalledLibs,
-  addAppTsx,
-  installWindows,
-  edit_tsconfigJson,
-  removeJest,
-  askForKeepingJest,
-  fixMainActivity,
 } from './methods.js';
 import config from './template.config.js';
 
@@ -104,6 +105,15 @@ async function app() {
       await fixMainActivity(inputs.name);
     } catch (error) {
       loading.error('Error fixing MainActivity.java on Android !!');
+    }
+  }
+
+  // * add kotlin version to build.gradle
+  if (inputs.platforms.includes(OS.Android)) {
+    try {
+      await addKotlinVersion(inputs.name);
+    } catch (error) {
+      loading.error('Error adding kotlin version to build.gradle file !!');
     }
   }
 

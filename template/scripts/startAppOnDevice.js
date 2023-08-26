@@ -56,7 +56,7 @@ const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'plat
     console.log(
       chalk.yellow('\n🚀 Starting'),
       chalk.cyan(packageName),
-      chalk.yellow('in your device'),
+      chalk.yellow('on your device'),
       chalk.cyan(`(${devices[0]})`),
       chalk.yellow('...\n')
     );
