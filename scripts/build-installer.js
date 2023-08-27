@@ -1,5 +1,5 @@
 import * as fs from 'fs/promises';
-import { existsSync } from 'fs';
+import { copyFile, existsSync } from 'fs';
 import fetch from 'node-fetch';
 import chalk from 'chalk';
 import { exec } from 'child_process';
@@ -65,7 +65,8 @@ const outFolder = 'installer',
     await recursiveCopy('template', path.normalize(`${outFolder}/template`));
     progress('- Scripts files copied successfully!');
   } catch (error) {
-    progress('Error: copying scritps files failed!', true);
+  console.log(error);
+    progress('Error: copying scripts files failed!', true);
     return;
   }
 
@@ -157,23 +158,21 @@ function loading(message) {
   };
 }
 
-async function recursiveCopy(fromPath, toPath) {
-  const copyFiles = async dir => {
-    const files = await fs.readdir(dir);
+async function recursiveCopy(source, target) {
+  const sourceStats = await fs.stat(source);
+
+  if (sourceStats.isDirectory()) {
+    await fs.mkdir(target, { recursive: true });
+
+    const files = await fs.readdir(source);
+
     for (const file of files) {
-      const filePath = path.join(dir, file);
-      const isDir = (await fs.lstat(filePath)).isDirectory();
+      const sourcePath = path.join(source, file);
+      const targetPath = path.join(target, file);
 
-      if (isDir) {
-        const toDir = path.join(toPath, file);
-        if (!existsSync(toDir)) await fs.mkdir(toDir);
-        await copyFiles(filePath);
-      } else {
-        await fs.copyFile(filePath, path.join(path.dirname(toPath), dir, file));
-      }
+      await recursiveCopy(sourcePath, targetPath);
     }
-  };
-
-  if (!existsSync(toPath)) await fs.mkdir(toPath);
-  copyFiles(fromPath);
+  } else if (sourceStats.isFile()) {
+    await fs.copyFile(source, target);
+  }
 }

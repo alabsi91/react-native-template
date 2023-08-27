@@ -17,6 +17,7 @@ import {
   askForPlatforms,
   askForPreInstalledLibs,
   askForProjectName,
+  copyReactNavigationTemplate,
   copyScripts,
   editIndexJs,
   editPackageJson,
@@ -55,22 +56,39 @@ async function app() {
     installDependencies: await askForInstallingDeps(),
   };
 
+  const isAndroid = inputs.platforms.includes(OS.Android);
+  const isIOS = inputs.platforms.includes(OS.IOS);
+  const isWeb = inputs.platforms.includes(OS.Web);
+  const isWindows = inputs.platforms.includes(OS.Windows);
+
+  const isReactNavigationSelected = inputs.preLibs.includes('react-navigation');
+
   const configuration = inputs.keepJest ? config : removeJest();
 
   // add deps for react-navigation if included
-  if (inputs.preLibs.includes('react-navigation')) {
+  if (isReactNavigationSelected) {
     inputs.preLibs.splice(inputs.preLibs.indexOf('react-navigation'), 1, '@react-navigation/native');
     inputs.preLibs.push('@react-navigation/native-stack');
     inputs.preLibs.push('react-native-screens');
     inputs.preLibs.push('react-native-safe-area-context');
   }
 
-  if (inputs.preLibs.includes('react-native-reanimated')) configuration.babelPlugins.push('react-native-reanimated/plugin');
+  // add react-native-reanimated and react-native-gesture-handler if reanimated-color-picker selected
+  if (inputs.preLibs.includes('reanimated-color-picker')) {
+    configuration.babelPlugins.push('react-native-reanimated');
+    configuration.babelPlugins.push('react-native-gesture-handler');
+  }
+
+  // add babel plugin for react native reanimated if selected
+  if (inputs.preLibs.includes('react-native-reanimated')) {
+    configuration.babelPlugins.push('react-native-reanimated/plugin');
+  }
 
   // * add chosen libs to template_configs
-  const libs = inputs.preLibs.map(lib => [lib, 'latest']);
+  const libs = [...new Set(inputs.preLibs)].map(lib => [lib, 'latest']);
   configuration.dep_to_add.push(...libs);
 
+  // * download template
   const loading = progress('Downloading ...');
   try {
     await cmd(`npx -y react-native init "${inputs.name}" --skip-install ${process.argv.slice(2).join(' ')}`);
@@ -82,7 +100,7 @@ async function app() {
   loading.start('Applying settings ...');
 
   // * copy scripts folder
-  if (inputs.platforms.includes(OS.Android)) {
+  if (isAndroid) {
     try {
       await copyScripts(inputs.name);
     } catch (error) {
@@ -91,7 +109,7 @@ async function app() {
   }
 
   // * enabling Separate Builds for Android
-  if (inputs.platforms.includes(OS.Android)) {
+  if (isAndroid) {
     try {
       await enableSeparateBuild(inputs.name);
     } catch (error) {
@@ -100,7 +118,7 @@ async function app() {
   }
 
   // * fixing MainActivity.java on Android
-  if (inputs.platforms.includes(OS.Android)) {
+  if (isAndroid) {
     try {
       await fixMainActivity(inputs.name);
     } catch (error) {
@@ -109,7 +127,7 @@ async function app() {
   }
 
   // * add kotlin version to build.gradle
-  if (inputs.platforms.includes(OS.Android)) {
+  if (isAndroid) {
     try {
       await addKotlinVersion(inputs.name);
     } catch (error) {
@@ -126,8 +144,8 @@ async function app() {
 
   // * delete files
   let to_delete = configuration.delete;
-  if (!inputs.platforms.includes(OS.Android)) to_delete = to_delete.concat(configuration.delete_android);
-  if (!inputs.platforms.includes(OS.IOS)) to_delete = to_delete.concat(configuration.delete_ios);
+  if (!isAndroid) to_delete = to_delete.concat(configuration.delete_android);
+  if (!isIOS) to_delete = to_delete.concat(configuration.delete_ios);
   try {
     for (const file of to_delete) {
       const filePath = path.join(inputs.name, file);
@@ -160,7 +178,7 @@ async function app() {
   }
 
   // * applying web script
-  if (inputs.platforms.includes(OS.Web)) {
+  if (isWeb) {
     try {
       await webScript(inputs.name);
     } catch (error) {
@@ -187,7 +205,7 @@ async function app() {
   }
 
   // * run windows script
-  if (inputs.platforms.includes(OS.Windows)) {
+  if (isWindows) {
     loading.start('Applying settings for Windows platform ...');
 
     try {
@@ -212,6 +230,15 @@ async function app() {
     }
   } catch (error) {
     loading.error('Error while creating empty folders and files for the template !!');
+  }
+
+  // * copy react navigation template
+  if (isReactNavigationSelected) {
+    try {
+      await copyReactNavigationTemplate(inputs.name);
+    } catch (error) {
+      loading.error('Error while copying react navigation template !!');
+    }
   }
 
   // * run VSCode

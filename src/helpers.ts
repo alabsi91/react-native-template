@@ -1,4 +1,6 @@
 import chalk from 'chalk';
+import { copyFile, mkdir, readdir, stat } from 'fs/promises';
+import path from 'path';
 
 // ? 💁 See `https://github.com/sindresorhus/cli-spinners/blob/main/spinners.json` for more spinners.
 const frames = ['⠋', '⠙', '⠹', '⠸', '⠼', '⠴', '⠦', '⠧', '⠇', '⠏'];
@@ -82,4 +84,23 @@ export function progress(message: string, autoStopTimer = 0) {
 
 export function sleep(ms: number) {
   return new Promise(resolve => setTimeout(resolve, ms));
+}
+
+export async function copyRecursive(source: string, target: string): Promise<void> {
+  const sourceStats = await stat(source);
+
+  if (sourceStats.isDirectory()) {
+    await mkdir(target, { recursive: true });
+
+    const files = await readdir(source);
+
+    for (const file of files) {
+      const sourcePath = path.join(source, file);
+      const targetPath = path.join(target, file);
+
+      await copyRecursive(sourcePath, targetPath);
+    }
+  } else if (sourceStats.isFile()) {
+    await copyFile(source, target);
+  }
 }

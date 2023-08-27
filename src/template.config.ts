@@ -27,9 +27,12 @@ const config = {
   ],
 
   eslint: {
-    extends: '@react-native',
+    extends: ['@react-native', 'plugin:@typescript-eslint/recommended'],
+    ignorePatterns: ['*.js'],
     rules: {
       curly: 0,
+      '@typescript-eslint/consistent-type-imports': 1,
+      '@typescript-eslint/no-non-null-assertion': 0,
       'react-native/no-unused-styles': 1,
       'react-native/no-inline-styles': 0,
       'react-native/no-single-element-style-arrays': 1,
@@ -85,6 +88,7 @@ const config = {
   dep_to_add: [] as string[][],
 
   dev_deps_to_add: [
+    ['@typescript-eslint/eslint-plugin', 'latest'],
     ['babel-plugin-transform-remove-console', 'latest'],
     ['babel-plugin-module-resolver', 'latest'],
     ['inquirer', '8.0.0'],
@@ -110,7 +114,7 @@ const config = {
     {
       path: 'src/Types.d.ts',
       content:
-        "declare global {\n  declare module '*.png' {\n    const value: import('react-native').ImageSourcePropType;\n    export default value;\n  }\n}",
+        "import type { ImageSourcePropType } from 'react-native';\n\ndeclare global {\n  declare module '*.png' {\n    const value: ImageSourcePropType;\n    export default value;\n  }\n}",
     },
   ],
 

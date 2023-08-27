@@ -1,13 +1,14 @@
-import config from './template.config.js';
-import fetch from 'node-fetch';
+import chalk from 'chalk';
+import { exec } from 'child_process';
+import { existsSync } from 'fs';
 import fs from 'fs/promises';
 import inquirer from 'inquirer';
-import { existsSync } from 'fs';
+import fetch from 'node-fetch';
 import path from 'path';
-import { exec } from 'child_process';
-import util from 'util';
-import chalk from 'chalk';
 import prettier from 'prettier';
+import util from 'util';
+import { copyRecursive } from './helpers.js';
+import config from './template.config.js';
 
 const cmd = util.promisify(exec);
 
@@ -135,6 +136,13 @@ export async function copyScripts(templateName: string) {
   if (!existsSync(toPath)) await fs.mkdir(toPath);
   const scripts = await fs.readdir(fromPath);
   for (const file of scripts) await fs.copyFile(path.join(fromPath, file), path.join(toPath, file));
+}
+
+/** - Copy react navigation template */
+export async function copyReactNavigationTemplate(templateName: string) {
+  const source = path.join(path.dirname(process.argv[1]).replace('.dev-server', ''), 'template', 'reactNavigationTemplate');
+  const target = path.join(templateName, 'src');
+  copyRecursive(source, target);
 }
 
 /** - Add `App.tsx` file to the new template folder */
