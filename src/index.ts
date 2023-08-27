@@ -75,8 +75,8 @@ async function app() {
 
   // add react-native-reanimated and react-native-gesture-handler if reanimated-color-picker selected
   if (inputs.preLibs.includes('reanimated-color-picker')) {
-    configuration.babelPlugins.push('react-native-reanimated');
-    configuration.babelPlugins.push('react-native-gesture-handler');
+    configuration.preLibs.push('react-native-reanimated');
+    configuration.preLibs.push('react-native-gesture-handler');
   }
 
   // add babel plugin for react native reanimated if selected
