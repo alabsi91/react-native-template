@@ -3,7 +3,7 @@ import { Pressable, StatusBar, StyleSheet, Text, View } from 'react-native';
 import { useSafeAreaInsets } from 'react-native-safe-area-context';
 import Svg, { Path } from 'react-native-svg';
 
-import { useTheme } from '../Theme';
+import { useTheme } from '@styles/Theme';
 import ConditionalMount from './ConditionalMount';
 
 type HeaderProps = {
@@ -11,11 +11,15 @@ type HeaderProps = {
   children?: React.ReactNode;
   onBackPress?: () => void;
 };
+
+const TOP_PADDING = 20;
+
 export default function Header({ title = 'header', onBackPress, children }: HeaderProps) {
   const theme = useTheme();
   const { top } = useSafeAreaInsets();
+
   return (
-    <View style={[styles.header, { backgroundColor: theme.header, paddingTop: top + 20 }]}>
+    <View style={[styles.header, { backgroundColor: theme.header, paddingTop: top + TOP_PADDING }]}>
       <View style={styles.titleIconContainer}>
         <ConditionalMount mount={!!onBackPress}>
           <Pressable onPress={onBackPress}>
@@ -24,6 +28,7 @@ export default function Header({ title = 'header', onBackPress, children }: Head
             </Svg>
           </Pressable>
         </ConditionalMount>
+
         <Text style={styles.title} numberOfLines={1}>
           {title}
         </Text>
@@ -39,7 +44,7 @@ const styles = StyleSheet.create({
     flexDirection: 'row',
     justifyContent: 'space-between',
     backgroundColor: '#1f1f26',
-    paddingTop: (StatusBar.currentHeight || 25) + 20,
+    paddingTop: (StatusBar.currentHeight || 25) + TOP_PADDING,
     paddingBottom: 20,
     paddingHorizontal: 20,
 

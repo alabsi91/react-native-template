@@ -109,7 +109,15 @@ const config = {
     ['@expo/webpack-config', 'latest'],
   ],
 
-  create_folders: ['src/assets', 'src/components', 'src/screens'],
+  create_folders: [
+    'src/assets',
+    'src/assets/svg',
+    'src/assets/lottie',
+    'src/assets/icons',
+    'src/components',
+    'src/screens',
+    'src/styles',
+  ],
   create_files: [
     {
       path: 'src/Types.d.ts',
@@ -127,6 +135,7 @@ const config = {
         '@assets/*': ['src/assets/*'],
         '@components/*': ['src/components/*'],
         '@screens/*': ['src/screens/*'],
+        '@styles/*': ['src/styles/*'],
         '@types': ['src/Types'],
       },
       importsNotUsedAsValues: 'error',

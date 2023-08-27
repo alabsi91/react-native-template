@@ -8,7 +8,7 @@ type Props = {
   children: React.ReactNode;
 };
 
-export default function ConditionalMount({ mount = true, mountDelay = 0, unmountDelay = 0, children, fallback = null }: Props) {
+export default function ConditionalMount({ mount = true, mountDelay = 0, unmountDelay = 0, fallback = null, children }: Props) {
   const [isReady, setIsReady] = useState(false);
 
   useEffect(() => {

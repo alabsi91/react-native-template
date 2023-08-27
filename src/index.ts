@@ -17,6 +17,7 @@ import {
   askForPlatforms,
   askForPreInstalledLibs,
   askForProjectName,
+  configureMetroForSVG,
   copyReactNavigationTemplate,
   copyScripts,
   editIndexJs,
@@ -75,13 +76,18 @@ async function app() {
 
   // add react-native-reanimated and react-native-gesture-handler if reanimated-color-picker selected
   if (inputs.preLibs.includes('reanimated-color-picker')) {
-    configuration.preLibs.push('react-native-reanimated');
-    configuration.preLibs.push('react-native-gesture-handler');
+    inputs.preLibs.push('react-native-reanimated');
+    inputs.preLibs.push('react-native-gesture-handler');
   }
 
   // add babel plugin for react native reanimated if selected
   if (inputs.preLibs.includes('react-native-reanimated')) {
     configuration.babelPlugins.push('react-native-reanimated/plugin');
+  }
+
+  // add babel dev dep for react-native-svg
+  if (inputs.preLibs.includes('react-native-svg')) {
+    configuration.dev_deps_to_add.push(['react-native-svg-transformer', 'latest']);
   }
 
   // * add chosen libs to template_configs
@@ -230,6 +236,21 @@ async function app() {
     }
   } catch (error) {
     loading.error('Error while creating empty folders and files for the template !!');
+  }
+
+  // * "metro.config.js" to process svg files
+  if (inputs.preLibs.includes('react-native-svg')) {
+    try {
+      await configureMetroForSVG(inputs.name);
+      // re-append 'Types.d.ts' file
+      await fs.appendFile(
+        path.join(inputs.name, 'src', 'Types.d.ts'),
+        "import type React from 'react';\nimport type { ImageSourcePropType } from 'react-native';\nimport type { SvgProps } from 'react-native-svg';\n\ndeclare global {\n  declare module '*.png' {\n    const value: ImageSourcePropType;\n    export default value;\n  }\n  declare module '*.svg' {\n    const content: React.FC<SvgProps>;\n    export default content;\n  }\n}",
+        { encoding: 'utf-8' }
+      );
+    } catch (error) {
+      loading.error('Error while editing "metro.config.js" !!');
+    }
   }
 
   // * copy react navigation template

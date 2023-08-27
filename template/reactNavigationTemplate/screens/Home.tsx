@@ -1,7 +1,7 @@
 import React, { useRef } from 'react';
 import { Animated, Easing, Linking, Pressable, StyleSheet, Text, View } from 'react-native';
 
-import { useTheme } from '../Theme';
+import { useTheme } from '@styles/Theme';
 
 import type { HomeProps } from '@types';
 

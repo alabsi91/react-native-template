@@ -1,5 +1,6 @@
 import React, { createContext, useContext, useEffect, useRef, useState } from 'react';
 import { Appearance, StatusBar } from 'react-native';
+
 import type { NativeEventSubscription } from 'react-native';
 
 const lightTheme = {
@@ -34,8 +35,8 @@ export const theme = Appearance.getColorScheme() === 'light' ? lightTheme : dark
 
 type ColorScheme = 'light' | 'dark' | 'auto';
 
-type ThemeContextType = typeof theme & { setColor: (value: typeof theme) => void } & {
-  setTheme: (value: ColorScheme) => void;
+type ThemeContextType = typeof theme & { setTheme: (value: typeof theme) => void } & {
+  setColorScheme: (value: ColorScheme) => void;
 };
 
 const ThemeContext = createContext<ThemeContextType>(null!);
@@ -53,11 +54,11 @@ export function ThemeProvider({ defaultTheme = 'auto', children }: ThemeProvider
 
   const colorSchemeListener = useRef<NativeEventSubscription>(null!);
 
-  const setColor = (value: typeof theme) => {
+  const setTheme = (value: typeof theme) => {
     setInitialTheme(i => ({ ...i, ...value }));
   };
 
-  const setTheme = (value: ColorScheme) => {
+  const setColorScheme = (value: ColorScheme) => {
     if (value === 'auto') {
       const scheme = Appearance.getColorScheme() ?? 'dark';
       setInitialTheme(scheme === 'light' ? lightTheme : darkTheme);
@@ -77,13 +78,13 @@ export function ThemeProvider({ defaultTheme = 'auto', children }: ThemeProvider
   };
 
   useEffect(() => {
-    setTheme(defaultTheme);
+    setColorScheme(defaultTheme);
   }, []);
 
   return (
     <>
       <StatusBar backgroundColor='transparent' barStyle={initialTheme.isDark ? 'light-content' : 'dark-content'} translucent />
-      <ThemeContext.Provider value={{ ...initialTheme, setColor, setTheme }}>{children}</ThemeContext.Provider>
+      <ThemeContext.Provider value={{ ...initialTheme, setTheme, setColorScheme }}>{children}</ThemeContext.Provider>
     </>
   );
 }

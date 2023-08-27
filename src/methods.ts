@@ -229,6 +229,41 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
   await fs.writeFile(packageJsonPath, formattedString, { encoding: 'utf-8' });
 }
 
+/** - Edit `metro.config.js` file to process svg fils */
+export async function configureMetroForSVG(templateName: string) {
+  const metroConfigPath = path.join(templateName, 'metro.config.js');
+  const str = await fs.readFile(metroConfigPath, { encoding: 'utf-8' });
+
+  // Find the position after the last "require" statement
+  const lastMatch = str.match(/require\(.+\).*/g)?.at(-1) ?? '';
+  const insertPosition = str.indexOf(lastMatch) + lastMatch.length;
+
+  // Insert the text at the calculated position
+  let modifiedStr =
+    str.slice(0, insertPosition) +
+    `
+
+const defaultConfig = getDefaultConfig(__dirname);
+const { assetExts, sourceExts } = defaultConfig.resolver;` +
+    str.slice(insertPosition);
+
+  // add config
+  modifiedStr = modifiedStr.replace(
+    /([\s\S]+const\s+config\s*=\s*{)()([\s\S]+)/,
+    `$1
+  transformer: {
+    babelTransformerPath: require.resolve('react-native-svg-transformer'),
+  },
+  resolver: {
+    assetExts: assetExts.filter((ext) => ext !== 'svg'),
+    sourceExts: [...sourceExts, 'svg'],
+  },
+$3`
+  );
+
+  await fs.writeFile(metroConfigPath, modifiedStr, { encoding: 'utf-8' });
+}
+
 /** - Add `babel.config.js` to template */
 export async function addBabelConfig(templateName: string) {
   type RegExpMatchArrayWithIndices = RegExpMatchArray & { indices: Array<[number, number]> };
