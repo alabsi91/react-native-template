@@ -3,32 +3,41 @@ import { Appearance, StatusBar } from 'react-native';
 
 import type { NativeEventSubscription } from 'react-native';
 
+// ? use only HEX colors
 const lightTheme = {
   isDark: false,
-  primary: '#0074D9',
-  secondary: '#FF4136',
-  background: '#F5F5F5',
-  text: '#333333',
-  header: '#fff',
-  button: '#2ECC40',
-  border: '#DDDDDD',
-  info: '#428BCA',
-  shadow: '#888888',
-  disabled: '#CCCCCC',
+
+  primary: '#007bff',
+
+  text: '#333',
+  textMedium: '#555',
+  textFaded: '#777',
+
+  BorW: '#000',
+  shadow: '#ddd',
+
+  background: '#fff',
+  header: '#f5f5f5',
+  card: '#f0f0f0',
+  icon: '#555',
 };
 
-const darkTheme = {
+const darkTheme: typeof lightTheme = {
   isDark: true,
-  primary: '#1E90FF',
-  secondary: '#FF6347',
-  background: '#1E1E1E',
-  text: '#FFFFFF',
-  header: '#000',
-  button: '#3CB371',
-  border: '#555555',
-  info: '#66B2FF',
-  shadow: '#333333',
-  disabled: '#888888',
+
+  primary: '#9ed5ff',
+
+  text: '#e0f2ff',
+  textMedium: '#dbe0e6',
+  textFaded: '#acc1d2',
+
+  BorW: '#fff',
+  shadow: '#222',
+
+  background: '#1a191f',
+  header: '#1f1f26',
+  card: '#282d33',
+  icon: '#acc1d2',
 };
 
 export const theme = Appearance.getColorScheme() === 'light' ? lightTheme : darkTheme;

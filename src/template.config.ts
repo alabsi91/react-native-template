@@ -13,8 +13,8 @@ const config = {
     ['📱 emulator', 'node scripts/emulator.js'],
     ['📦 build', 'node scripts/build.js'],
     ['⬇️ install-apk', 'node scripts/installApk.js'],
-    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.js'],
     ['🚀 run-app', 'node scripts/startAppOnDevice.js'],
+    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.js'],
     ['🔌 adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
@@ -77,6 +77,7 @@ const config = {
     '@react-native-google-signin/google-signin',
     '@react-native-community/netinfo',
     '@react-native-community/datetimepicker',
+    '@react-native-community/blur',
     '@react-native-async-storage/async-storage',
   ],
 
@@ -114,6 +115,7 @@ const config = {
     'src/assets/svg',
     'src/assets/lottie',
     'src/assets/icons',
+    'src/assets/fonts',
     'src/components',
     'src/screens',
     'src/styles',
@@ -123,6 +125,11 @@ const config = {
       path: 'src/Types.d.ts',
       content:
         "import type { ImageSourcePropType } from 'react-native';\n\ndeclare global {\n  declare module '*.png' {\n    const value: ImageSourcePropType;\n    export default value;\n  }\n}",
+    },
+    {
+      path: 'react-native.config.js',
+      content:
+        "module.exports = {\n  project: {\n    ios: {},\n    android: {},\n  },\n  assets: ['src/assets/fonts/'],\n};\n// run the command `npx react-native-asset` to link fonts.\n// don't forget to rebuild your project.",
     },
   ],
 
