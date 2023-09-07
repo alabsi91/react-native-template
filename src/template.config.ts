@@ -66,6 +66,7 @@ const config = {
     'react-native-safe-area-context',
     'react-native-reanimated',
     'react-native-mmkv',
+    'react-native-material-you-colors',
     'react-native-linear-gradient',
     'react-native-gesture-handler',
     'react-native-device-info',

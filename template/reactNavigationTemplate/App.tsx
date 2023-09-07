@@ -7,7 +7,7 @@ import Confirm from '@components/Confirm';
 import Portal from '@components/Portal/Portal';
 import Toast from '@components/ToastMessage';
 import Home from '@screens/Home';
-import { ThemeProvider } from '@styles/Theme';
+import { ThemeProvider, useTheme } from '@styles/Theme';
 
 import type { RootStackParamList } from '@types';
 
@@ -17,7 +17,8 @@ const Stack = createNativeStackNavigator<RootStackParamList>();
 
 export default function App() {
   return (
-    <ThemeProvider defaultTheme='auto'>
+    <ThemeProvider>
+      <ThemedStatusBar />
       <Portal.Host>
         <NavigationContainer>
           <Stack.Navigator initialRouteName='Home' screenOptions={{ header: () => null }}>
@@ -31,4 +32,9 @@ export default function App() {
       <Toast.Provider />
     </ThemeProvider>
   );
+}
+
+function ThemedStatusBar() {
+  const theme = useTheme();
+  return <StatusBar backgroundColor='transparent' barStyle={theme.isDark ? 'light-content' : 'dark-content'} translucent />;
 }
