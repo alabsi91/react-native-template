@@ -1,6 +1,7 @@
 import { NavigationContainer } from '@react-navigation/native';
 import { createNativeStackNavigator } from '@react-navigation/native-stack';
 import React from 'react';
+import { StatusBar } from 'react-native';
 import { enableFreeze } from 'react-native-screens';
 
 import Confirm from '@components/Confirm';
@@ -10,7 +11,6 @@ import Home from '@screens/Home';
 import { ThemeProvider, useTheme } from '@styles/Theme';
 
 import type { RootStackParamList } from '@types';
-import { StatusBar } from 'react-native/types';
 
 enableFreeze(true);
 
