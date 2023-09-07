@@ -10,6 +10,7 @@ import Home from '@screens/Home';
 import { ThemeProvider, useTheme } from '@styles/Theme';
 
 import type { RootStackParamList } from '@types';
+import { StatusBar } from 'react-native/types';
 
 enableFreeze(true);
 
