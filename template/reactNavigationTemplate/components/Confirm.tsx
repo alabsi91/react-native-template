@@ -7,8 +7,9 @@ import CancelIcon from '@assets/svg/close.svg';
 import DoneIcon from '@assets/svg/done.svg';
 import { fontFamily, useFontSize } from '@styles/Fonts';
 import { useTheme } from '@styles/Theme';
+import Log from '../utils/logger.js';
 import Button from './Button';
-import ConditionalMount from './ConditionalMount';
+import RenderConditionally from './RenderConditionally';
 
 import type { SvgProps } from 'react-native-svg';
 
@@ -86,7 +87,7 @@ const ConfirmComponent = forwardRef<ConfirmRefType, Props>(
     useImperativeHandle(ref, () => ({ show, close }));
 
     return (
-      <ConditionalMount mount={options.visible}>
+      <RenderConditionally if={options.visible}>
         {/* the background with fade animations */}
         <Animated.View style={styles.bg} entering={FadeIn} exiting={FadeOut.duration(200)}>
           <BlurView style={{ flex: 1 }} blurType={theme.isDark ? 'dark' : 'light'} blurAmount={5} />
@@ -118,7 +119,7 @@ const ConfirmComponent = forwardRef<ConfirmRefType, Props>(
             </View>
           </Animated.View>
         </View>
-      </ConditionalMount>
+      </RenderConditionally>
     );
   }
 );
@@ -128,12 +129,12 @@ const Confirm = {
 
   show: (options => {
     if (confirmRef.current) return confirmRef.current.show(options);
-    console.warn('The Confirm Component is not yet ready.');
+    Log.warn('[Confirm]: The Confirm Component is not yet ready.');
   }) as ConfirmRefType['show'],
 
   hide: () => {
     if (confirmRef.current) return confirmRef.current.close();
-    console.warn('The Confirm Component is not yet ready.');
+    Log.warn('[Confirm]: The Confirm Component is not yet ready.');
   },
 };
 

@@ -1,9 +1,9 @@
 import React from 'react';
-import { Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
 
 import { fontFamily, useFontSize } from '@styles/Fonts';
 import { useTheme } from '@styles/Theme';
-import ConditionalMount from './ConditionalMount';
+import RenderConditionally from './RenderConditionally';
 
 import type { GestureResponderEvent, StyleProp, ViewStyle } from 'react-native';
 import type { SvgProps } from 'react-native-svg';
@@ -40,15 +40,15 @@ export default function Button({ title, onPress, style, disabled, icon }: Props)
   return (
     <View style={[styles.button, { backgroundColor: theme.primary }, style]}>
       <Pressable style={styles.pressable} onPress={onPress} disabled={disabled} android_ripple={{ color: theme.primary + '50' }}>
-        <ConditionalMount mount={!!icon}>
+        <RenderConditionally if={icon}>
           <Icon />
-        </ConditionalMount>
+        </RenderConditionally>
 
-        <ConditionalMount mount={!!title}>
+        <RenderConditionally if={title}>
           <Text style={[styles.text, { color: theme.background, paddingHorizontal: icon ? 20 : 0, fontSize: fontSize.normal }]}>
             {title}
           </Text>
-        </ConditionalMount>
+        </RenderConditionally>
       </Pressable>
     </View>
   );

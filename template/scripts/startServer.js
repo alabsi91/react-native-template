@@ -8,6 +8,7 @@ const execPromise = util.promisify(exec);
 const adb = process.env.ANDROID_HOME ? path.join(process.env.ANDROID_HOME, 'platform-tools', 'adb') : 'adb';
 const args = process.argv.slice(2);
 const cache = args.includes('--reset-cache') ? ' --reset-cache' : '';
+const newTerminal = process.platform.startsWith('win') ? 'start ' : '';
 
 (async function () {
   let devices;
@@ -50,7 +51,7 @@ const cache = args.includes('--reset-cache') ? ' --reset-cache' : '';
   }
 
   try {
-    execPromise('start react-native start' + cache);
+    execPromise(newTerminal + 'npx react-native start' + cache);
     await new Promise(resolve => setTimeout(resolve, 2000));
   } catch (error) {
     console.log(chalk.red('\n⛔ Something went wrong !!'));

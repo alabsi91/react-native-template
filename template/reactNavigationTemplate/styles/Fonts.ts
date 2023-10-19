@@ -23,6 +23,8 @@ export function useFontSize() {
   const fontSizes = {
     /** **10** */
     tiny: calcFontSize(10),
+    /** **12** */
+    compact: calcFontSize(12),
     /** **14** */
     small: calcFontSize(14),
     /** **16** */

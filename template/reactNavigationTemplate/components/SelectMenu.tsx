@@ -1,14 +1,14 @@
 import { BlurView } from '@react-native-community/blur';
 import React, { useEffect, useState } from 'react';
-import { BackHandler, FlatList, Pressable, StyleSheet, Text, View, Image } from 'react-native';
+import { BackHandler, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, FadeIn, FadeOut, FadeOutDown, ZoomInDown } from 'react-native-reanimated';
 
 import radioCheckedIcon from '@assets/icons/radio_checked.png';
 import radioUncheckedIcon from '@assets/icons/radio_unchecked.png';
 import { fontFamily, useFontSize } from '@styles/Fonts';
 import { useTheme } from '@styles/Theme';
-import ConditionalMount from './ConditionalMount';
 import Portal from './Portal/Portal';
+import RenderConditionally from './RenderConditionally';
 
 type Props<T extends { label: string; value: unknown }> = {
   children?: React.FC<{ label: string }>;
@@ -73,17 +73,17 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
           {item.label}
         </Text>
 
-        <ConditionalMount mount={!disableRadioIconRendering}>
+        <RenderConditionally if={!disableRadioIconRendering}>
           {/* unchecked radio button */}
-          <ConditionalMount mount={!isSelected}>
+          <RenderConditionally if={!isSelected}>
             <Image source={radioUncheckedIcon} style={{ width: 24, height: 24 }} width={40} height={40} tintColor={theme.icon} />
-          </ConditionalMount>
+          </RenderConditionally>
 
           {/* checked radio button */}
-          <ConditionalMount mount={isSelected}>
+          <RenderConditionally if={isSelected}>
             <Image source={radioCheckedIcon} style={{ width: 24, height: 24 }} width={40} height={40} tintColor={theme.primary} />
-          </ConditionalMount>
-        </ConditionalMount>
+          </RenderConditionally>
+        </RenderConditionally>
       </Pressable>
     );
   };
@@ -110,7 +110,7 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
         <OpenButton label={currentLabel} />
       </Pressable>
 
-      <ConditionalMount mount={visible}>
+      <RenderConditionally if={visible}>
         <Portal>
           {/* blurry background with fade animation*/}
           <Animated.View style={styles.bg} entering={FadeIn} exiting={FadeOut.duration(200)}>
@@ -131,7 +131,7 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
             </Animated.View>
           </View>
         </Portal>
-      </ConditionalMount>
+      </RenderConditionally>
     </>
   );
 }

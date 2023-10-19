@@ -1,10 +1,10 @@
-import * as fs from 'fs/promises';
-import { copyFile, existsSync } from 'fs';
-import fetch from 'node-fetch';
 import chalk from 'chalk';
 import { exec } from 'child_process';
-import { promisify } from 'util';
+import { existsSync } from 'fs';
+import * as fs from 'fs/promises';
+import fetch from 'node-fetch';
 import path from 'path';
+import { promisify } from 'util';
 const cmd = promisify(exec);
 
 // ? ⚠️ install NSIS via powershell `winget install NSIS.NSIS`

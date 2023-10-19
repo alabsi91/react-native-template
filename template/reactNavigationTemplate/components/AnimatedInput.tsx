@@ -71,6 +71,20 @@ const AnimatedInput = forwardRef<AnimatedInputRef, Props>(
       inputRef.current.setNativeProps({ text: inputValue.current });
     }, [theme.isDark]);
 
+    useEffect(() => {
+      if (!('value' in props)) return;
+
+      inputValue.current = props.value;
+      inputRef.current.setNativeProps({ text: inputValue.current });
+
+      if (inputValue.current) {
+        animateUp();
+        return;
+      }
+
+      if (!inputRef.current.isFocused()) animateDown();
+    }, [props.value]);
+
     const onInputFocus = () => {
       borderColor.value = withTiming(theme.primary, { duration: 400 });
       animateUp();

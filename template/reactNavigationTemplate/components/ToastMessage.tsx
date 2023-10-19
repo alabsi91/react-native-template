@@ -1,10 +1,11 @@
 import React, { forwardRef, useImperativeHandle, useRef, useState } from 'react';
-import { StyleSheet, Text, View } from 'react-native';
+import { Alert, StyleSheet, Text, View } from 'react-native';
 import Animated, { Easing, FadeOutDown, FadeOutUp, ZoomInDown, ZoomInUp } from 'react-native-reanimated';
 import Svg, { Path } from 'react-native-svg';
 
 import { fontFamily, useFontSize } from '@styles/Fonts';
-import ConditionalMount from './ConditionalMount';
+import Log from '../utils/logger.js';
+import RenderConditionally from './RenderConditionally';
 
 type Props = {
   message?: string;
@@ -86,7 +87,7 @@ const ToastMessage = forwardRef<ToastMessageRefType, Props>((props, ref) => {
   }));
 
   return (
-    <ConditionalMount mount={options.visible}>
+    <RenderConditionally if={options.visible}>
       <Animated.View
         style={[styles.container, { backgroundColor: COLORS[options.type], [options.position]: options.offset }]}
         entering={
@@ -99,7 +100,7 @@ const ToastMessage = forwardRef<ToastMessageRefType, Props>((props, ref) => {
         <Text style={[styles.message, { fontSize: fontSize.normal }]}>{options.message}</Text>
         <View style={styles.icon}>{Icons[options.type]}</View>
       </Animated.View>
-    </ConditionalMount>
+    </RenderConditionally>
   );
 });
 
@@ -108,12 +109,13 @@ const Toast = {
 
   show: (options => {
     if (toastMessageRef.current) return toastMessageRef.current.show(options);
-    console.warn('The Toast Component is not yet ready.');
+    Alert.alert(options?.message ?? '');
+    Log.warn('[Toast]: The Toast Component is not yet ready.');
   }) as ToastMessageRefType['show'],
 
   hide: () => {
     if (toastMessageRef.current) return toastMessageRef.current.hide();
-    console.warn('The Toast Component is not yet ready.');
+    Log.warn('[Toast]: The Toast Component is not yet ready.');
   },
 };
 
