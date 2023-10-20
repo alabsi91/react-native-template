@@ -23,7 +23,7 @@ const { operationName } = await inquirer.prompt([
 ]);
 
 // eslint and typescript check
-if (operationName === CHOICES.APK_RELEASE) {
+if (operationName === CHOICES.APK_RELEASE || operationName === CHOICES.BUNDLE_RELEASE) {
   console.log(chalk.yellow('\n🔄 Checking for'), chalk.cyan('`typescript`'), chalk.yellow('errors ...\n'));
   await executeCommand('npx', ['tsc', '--project', './'], { stdio: 'inherit', shell: true });
 
