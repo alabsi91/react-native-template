@@ -4,17 +4,17 @@ const config = {
   delete_ios: ['ios', 'Gemfile'],
 
   scripts: [
-    ['💻 dev-server', 'node scripts/startServer.js'],
-    ['🔁 reset-cache', 'node scripts/startServer.js --reset-cache'],
+    ['💻 dev-server', 'node scripts/startServer.mjs'],
+    ['🔁 reset-cache', 'node scripts/startServer.mjs --reset-cache'],
     ['🔎 test', 'jest'],
   ],
 
   scripts_android: [
-    ['📱 emulator', 'node scripts/emulator.js'],
-    ['📦 build', 'node scripts/build.js'],
-    ['⬇️ install-apk', 'node scripts/installApk.js'],
-    ['🚀 run-app', 'node scripts/startAppOnDevice.js'],
-    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.js'],
+    ['📱 emulator', 'node scripts/emulator.mjs'],
+    ['📦 build', 'node scripts/build.mjs'],
+    ['⬇️ install-apk', 'node scripts/installApk.mjs'],
+    ['🚀 run-app', 'node scripts/startAppOnDevice.mjs'],
+    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.mjs'],
     ['🔌 adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
