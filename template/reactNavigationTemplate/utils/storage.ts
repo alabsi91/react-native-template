@@ -14,7 +14,7 @@ const storage = {
     typeof value === 'undefined' ? mmkv.delete(this.keys.isGuest) : mmkv.set(this.keys.isGuest, value);
   },
 
-  clearAll: () => mmkv.clearAll,
+  clearAll: () => mmkv.clearAll(),
   addEventListener: (onValueChanged: (key: string) => void) => {
     return mmkv.addOnValueChangedListener(key => {
       onValueChanged(key);
