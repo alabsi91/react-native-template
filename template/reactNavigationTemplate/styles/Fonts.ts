@@ -17,7 +17,7 @@ export function useFontSize() {
 
   const calcFontSize = (size: number) => {
     const windowWidth = width > 600 ? 600 : width;
-    return (windowWidth > 600 ? size : size + 16 * ((windowWidth - 320) / 680)) / fontScale;
+    return (size + 16 * ((windowWidth - 320) / 680)) / fontScale;
   };
 
   const fontSizes = {
