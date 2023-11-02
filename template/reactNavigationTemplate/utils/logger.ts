@@ -46,7 +46,7 @@ export default class Log {
         '| ' +
         resetColors +
         bgColor(colors.yellow) +
-        textColor(colors.whiteBright) +
+        textColor(colors.black) +
         ' WARNING ' +
         resetColors +
         textColor(colors.yellow) +
@@ -62,7 +62,7 @@ export default class Log {
         '| ' +
         resetColors +
         bgColor(colors.cyan) +
-        textColor(colors.whiteBright) +
+        textColor(colors.black) +
         '  INFO   ' +
         resetColors +
         textColor(colors.cyanBright) +
@@ -78,7 +78,7 @@ export default class Log {
         '| ' +
         resetColors +
         bgColor(colors.red) +
-        textColor(colors.whiteBright) +
+        textColor(colors.black) +
         '  ERROR  ' +
         resetColors +
         textColor(colors.redBright) +
@@ -94,7 +94,7 @@ export default class Log {
         '| ' +
         resetColors +
         bgColor(colors.greenBright) +
-        textColor(colors.whiteBright) +
+        textColor(colors.black) +
         ' SUCCESS ' +
         resetColors +
         textColor(colors.greenBright) +
