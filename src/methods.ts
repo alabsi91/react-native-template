@@ -19,6 +19,8 @@ export enum OS {
   Windows = 'Windows',
 }
 
+console.log(OS)
+
 type packageJsonType = {
   name: string;
   jest?: object;
