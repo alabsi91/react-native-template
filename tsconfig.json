@@ -7,8 +7,9 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
+    "skipLibCheck": true,
     "removeComments": true,
   },
-  "include": ["./src", "template"],
+  "include": ["./src"],
   "exclude": ["node_modules"]
 }

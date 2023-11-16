@@ -8,7 +8,8 @@
   "description": "Create new React-Native template",
   "bin": "dist/index.js",
   "files": [
-    "dist"
+    "dist",
+    "template"
   ],
   "scripts": {
     "start:dev": "node scripts/start-dev.js",
