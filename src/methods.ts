@@ -7,10 +7,10 @@ import fetch from 'node-fetch';
 import path from 'path';
 import prettier from 'prettier';
 import util from 'util';
-import { copyRecursive } from './helpers.js';
 import config from './template.config.js';
+import { copyRecursive, validateProjectName } from './utils.js';
 
-const cmd = util.promisify(exec);
+export const cmd = util.promisify(exec);
 
 export enum OS {
   Android = 'Android',
@@ -229,41 +229,6 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
   await fs.writeFile(packageJsonPath, formattedString, { encoding: 'utf-8' });
 }
 
-/** - Edit `metro.config.js` file to process svg fils */
-export async function configureMetroForSVG(templateName: string) {
-  const metroConfigPath = path.join(templateName, 'metro.config.js');
-  const str = await fs.readFile(metroConfigPath, { encoding: 'utf-8' });
-
-  // Find the position after the last "require" statement
-  const lastMatch = str.match(/require\(.+\).*/g)?.at(-1) ?? '';
-  const insertPosition = str.indexOf(lastMatch) + lastMatch.length;
-
-  // Insert the text at the calculated position
-  let modifiedStr =
-    str.slice(0, insertPosition) +
-    `
-
-const defaultConfig = getDefaultConfig(__dirname);
-const { assetExts, sourceExts } = defaultConfig.resolver;` +
-    str.slice(insertPosition);
-
-  // add config
-  modifiedStr = modifiedStr.replace(
-    /([\s\S]+const\s+config\s*=\s*{)()([\s\S]+)/,
-    `$1
-  transformer: {
-    babelTransformerPath: require.resolve('react-native-svg-transformer'),
-  },
-  resolver: {
-    assetExts: assetExts.filter((ext) => ext !== 'svg'),
-    sourceExts: [...sourceExts, 'svg'],
-  },
-$3`
-  );
-
-  await fs.writeFile(metroConfigPath, modifiedStr, { encoding: 'utf-8' });
-}
-
 /** - Add `babel.config.js` to template */
 export async function addBabelConfig(templateName: string) {
   type RegExpMatchArrayWithIndices = RegExpMatchArray & { indices: Array<[number, number]> };
@@ -319,92 +284,9 @@ export async function edit_tsconfigJson(templateName: string) {
   await fs.writeFile(tsPath, formattedString, { encoding: 'utf-8' });
 }
 
-/** - Copy file from template folder for web platform */
-export async function webScript(templateName: string) {
-  config.babelPlugins.unshift(
-    ...[
-      '@babel/plugin-proposal-export-namespace-from',
-      '@babel/plugin-proposal-optional-chaining',
-      '@babel/plugin-transform-modules-commonjs',
-    ]
-  );
-
-  // modify index.js
-  const indexPath = path.join(templateName, 'index.js');
-  const file = await fs.readFile(indexPath, { encoding: 'utf-8' });
-  const str =
-    file.replace('AppRegistry', ' AppRegistry, Platform ') +
-    `
-if (Platform.OS === 'web') {
-  const rootTag = document.getElementById('root');
-  AppRegistry.runApplication('${templateName}', { rootTag });
-}
-`;
-
-  const formattedString = prettier.format(str, { ...config.prettier, parser: 'babel' });
-
-  await fs.writeFile(indexPath, formattedString, { encoding: 'utf-8' });
-}
-
-/** - Android enable separate build in gradle.build */
-export async function enableSeparateBuild(templateName: string) {
-  const pathToGradle = path.join(templateName, 'android', 'app', 'build.gradle');
-  const fileStr = await fs.readFile(pathToGradle, { encoding: 'utf-8' });
-  const newStr = fileStr
-    .replace(
-      'android {',
-      `android {
-    splits {
-        abi {
-            reset()
-            enable true
-            universalApk true
-            include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
-        }
-    }`
-    )
-    .replace(/\s*\/\*[\s\S]*?\*\//gm, '') // remove comment blocks
-    .replace(/\s*\/\/.*$/gm, ''); // remove inline comments
-
-  await fs.writeFile(pathToGradle, newStr, { encoding: 'utf-8' });
-}
-
-/** - Run windows platform script */
-export async function installWindows(templateName: string) {
-  await cmd('npx -y react-native-windows-init --overwrite', { cwd: templateName });
-}
-
 /** - Install npm dependencies */
 export async function installDependencies(templateName: string) {
   await cmd('npm i --force', { cwd: templateName });
-}
-
-/** - Fix for react native screens */
-export async function fixMainActivity(templateName: string) {
-  const pathJavaMain = path.join(templateName, 'android', 'app', 'src', 'main', 'java', 'com', templateName, 'MainActivity.java');
-  const fileStr = await fs.readFile(pathJavaMain, { encoding: 'utf-8' });
-  let newStr = fileStr.replace(/(^package.+)(\s)([\s\S]+)/, '$1\n\nimport android.os.Bundle;$3');
-  newStr = newStr.replace(
-    /(MainActivity extends ReactActivity[\s\S]+?{)(\s)([\s\S]+)/,
-    `$1
-
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
-    super.onCreate(null);
-  }
-$3`
-  );
-
-  await fs.writeFile(pathJavaMain, newStr, { encoding: 'utf-8' });
-}
-
-/** - Add kotlin version to build.gradle */
-export async function addKotlinVersion(templateName: string) {
-  const pathBuildGradle = path.join(templateName, 'android', 'build.gradle');
-  const fileStr = await fs.readFile(pathBuildGradle, { encoding: 'utf-8' });
-  const newStr = fileStr.replace(/(buildscript\s+{[\s\S]+?ext\s+{)(\s)([\s\S]+)/, '$1\n        kotlinVersion = "1.7.0"\n$3');
-
-  await fs.writeFile(pathBuildGradle, newStr, { encoding: 'utf-8' });
 }
 
 /** - Open `VSCode` */
@@ -430,77 +312,4 @@ export function removeJest() {
   config.scripts.splice(scriptIndex, 1);
 
   return config;
-}
-
-const NAME_REGEX = /^[$A-Z_][0-9A-Z_$]*$/i;
-
-// ref: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
-const javaKeywords = [
-  'abstract',
-  'continue',
-  'for',
-  'new',
-  'switch',
-  'assert',
-  'default',
-  'goto',
-  'package',
-  'synchronized',
-  'boolean',
-  'do',
-  'if',
-  'private',
-  'this',
-  'break',
-  'double',
-  'implements',
-  'protected',
-  'throw',
-  'byte',
-  'else',
-  'import',
-  'public',
-  'throws',
-  'case',
-  'enum',
-  'instanceof',
-  'return',
-  'transient',
-  'catch',
-  'extends',
-  'int',
-  'short',
-  'try',
-  'char',
-  'final',
-  'interface',
-  'static',
-  'void',
-  'class',
-  'finally',
-  'long',
-  'strictfp',
-  'volatile',
-  'const',
-  'float',
-  'native',
-  'super',
-  'while',
-];
-
-const reservedNames = ['react', 'react-native', ...javaKeywords];
-
-export function validateProjectName(name: string) {
-  if (!String(name).match(NAME_REGEX)) {
-    throw new Error(`"${name}" is not a valid name for a project. Please use a valid identifier name (alphanumeric).`);
-  }
-
-  const lowerCaseName = name.toLowerCase();
-  if (reservedNames.includes(lowerCaseName)) {
-    throw new Error(`Not a valid name for a project. Please do not use the reserved word "${lowerCaseName}".`);
-  }
-
-  if (name.match(/helloworld/gi)) {
-    throw new Error('Project name shouldn\'t contain "HelloWorld" name in it, because it is CLI\'s default placeholder name.');
-  }
 }

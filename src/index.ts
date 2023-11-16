@@ -6,31 +6,31 @@ import fs from 'fs/promises';
 import gradient from 'gradient-string';
 import path from 'path';
 import util from 'util';
-import { progress } from './helpers.js';
+import { progress } from './utils.js';
 import {
   OS,
   addAppTsx,
   addBabelConfig,
-  addKotlinVersion,
   askForInstallingDeps,
   askForKeepingJest,
   askForPlatforms,
   askForPreInstalledLibs,
   askForProjectName,
-  configureMetroForSVG,
   copyReactNavigationTemplate,
   copyScripts,
   editIndexJs,
   editPackageJson,
   edit_tsconfigJson,
-  enableSeparateBuild,
-  fixMainActivity,
   installDependencies,
-  installWindows,
   removeJest,
   runVSCode,
-  webScript,
 } from './methods.js';
+import { installWindows } from './Windows/addWindowsSupport.js';
+import { webScript } from './Web/addWebSupport.js';
+import { addGlobalTypes, configureMetroForSVG } from './All/rnSvgSetup.js';
+import { addKotlinDependency, addKotlinVersion } from './Android/addKotlinVersion.js';
+import { fixMainActivity, fixPageTransition } from './Android/rnScreensFix.js';
+import { enableSeparateBuild } from './Android/enableSeparateBuild.js';
 import config from './template.config.js';
 
 const cmd = util.promisify(exec);
@@ -123,19 +123,21 @@ async function app() {
     }
   }
 
-  // * fixing MainActivity.java on Android
-  if (isAndroid) {
+  // * fix for react-native-screens on Android
+  if (inputs.preLibs.includes('react-native-screens') && isAndroid) {
     try {
       await fixMainActivity(inputs.name);
+      await fixPageTransition(inputs.name);
     } catch (error) {
-      loading.error('Error fixing MainActivity.java on Android !!');
+      loading.error('Error while applying a fix for react-native-screens on Android !!');
     }
   }
 
-  // * add kotlin version to build.gradle
+  // * add kotlin for Android
   if (isAndroid) {
     try {
       await addKotlinVersion(inputs.name);
+      await addKotlinDependency(inputs.name);
     } catch (error) {
       loading.error('Error adding kotlin version to build.gradle file !!');
     }
@@ -238,16 +240,11 @@ async function app() {
     loading.error('Error while creating empty folders and files for the template !!');
   }
 
-  // * "metro.config.js" to process svg files
+  // * for processing .svg files
   if (inputs.preLibs.includes('react-native-svg')) {
     try {
       await configureMetroForSVG(inputs.name);
-      // re-append 'Types.d.ts' file
-      await fs.appendFile(
-        path.join(inputs.name, 'src', 'Types.d.ts'),
-        "import type React from 'react';\nimport type { ImageSourcePropType } from 'react-native';\nimport type { SvgProps } from 'react-native-svg';\n\ndeclare global {\n  declare module '*.png' {\n    const value: ImageSourcePropType;\n    export default value;\n  }\n  declare module '*.svg' {\n    const content: React.FC<SvgProps>;\n    export default content;\n  }\n}",
-        { encoding: 'utf-8' }
-      );
+      await addGlobalTypes(inputs.name);
     } catch (error) {
       loading.error('Error while editing "metro.config.js" !!');
     }

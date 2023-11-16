@@ -104,3 +104,75 @@ export async function copyRecursive(source: string, target: string): Promise<voi
     await copyFile(source, target);
   }
 }
+
+const NAME_REGEX = /^[$A-Z_][0-9A-Z_$]*$/i;
+// ref: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
+const javaKeywords = [
+  'abstract',
+  'continue',
+  'for',
+  'new',
+  'switch',
+  'assert',
+  'default',
+  'goto',
+  'package',
+  'synchronized',
+  'boolean',
+  'do',
+  'if',
+  'private',
+  'this',
+  'break',
+  'double',
+  'implements',
+  'protected',
+  'throw',
+  'byte',
+  'else',
+  'import',
+  'public',
+  'throws',
+  'case',
+  'enum',
+  'instanceof',
+  'return',
+  'transient',
+  'catch',
+  'extends',
+  'int',
+  'short',
+  'try',
+  'char',
+  'final',
+  'interface',
+  'static',
+  'void',
+  'class',
+  'finally',
+  'long',
+  'strictfp',
+  'volatile',
+  'const',
+  'float',
+  'native',
+  'super',
+  'while',
+];
+
+const reservedNames = ['react', 'react-native', ...javaKeywords];
+
+export function validateProjectName(name: string) {
+  if (!String(name).match(NAME_REGEX)) {
+    throw new Error(`"${name}" is not a valid name for a project. Please use a valid identifier name (alphanumeric).`);
+  }
+
+  const lowerCaseName = name.toLowerCase();
+  if (reservedNames.includes(lowerCaseName)) {
+    throw new Error(`Not a valid name for a project. Please do not use the reserved word "${lowerCaseName}".`);
+  }
+
+  if (name.match(/helloworld/gi)) {
+    throw new Error('Project name shouldn\'t contain "HelloWorld" name in it, because it is CLI\'s default placeholder name.');
+  }
+}
