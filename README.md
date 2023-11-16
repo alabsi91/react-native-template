@@ -1,3 +1,3 @@
 ```console
- npx github:alabsi91/react-native-template -y
+npx -y github:alabsi91/react-native-template
 ```

@@ -17,7 +17,6 @@ export var OS;
     OS["Web"] = "Web";
     OS["Windows"] = "Windows";
 })(OS = OS || (OS = {}));
-console.log(OS);
 export async function askForProjectName() {
     const { name } = await inquirer.prompt([
         {
