@@ -9,6 +9,7 @@ import prettier from 'prettier';
 import util from 'util';
 import config from './template.config.js';
 import { copyRecursive, validateProjectName } from './utils.js';
+const templateDir = path.join(path.dirname(process.argv[1]).replace('.dev-server', '').replace('dist', ''), 'template');
 export const cmd = util.promisify(exec);
 export var OS;
 (function (OS) {
@@ -91,7 +92,7 @@ export async function askForPreInstalledLibs() {
     return libs;
 }
 export async function copyScripts(templateName) {
-    const fromPath = path.join(process.cwd(), 'template', 'scripts');
+    const fromPath = path.join(templateDir, 'scripts');
     const toPath = path.join(templateName, 'scripts');
     if (!existsSync(toPath))
         await fs.mkdir(toPath);
@@ -100,12 +101,12 @@ export async function copyScripts(templateName) {
         await fs.copyFile(path.join(fromPath, file), path.join(toPath, file));
 }
 export async function copyReactNavigationTemplate(templateName) {
-    const source = path.join(process.cwd(), 'template', 'reactNavigationTemplate');
+    const source = path.join(templateDir, 'reactNavigationTemplate');
     const target = path.join(templateName, 'src');
     copyRecursive(source, target);
 }
 export async function addAppTsx(templateName) {
-    const fromPath = path.join(process.cwd(), 'template', 'App.tsx');
+    const fromPath = path.join(templateDir, 'App.tsx');
     const toPath = path.join(templateName, 'src', 'App.tsx');
     const srcPath = path.join(templateName, 'src');
     if (!existsSync(srcPath))
@@ -164,7 +165,7 @@ export async function editPackageJson(templateName, platforms) {
     await fs.writeFile(packageJsonPath, formattedString, { encoding: 'utf-8' });
 }
 export async function addBabelConfig(templateName) {
-    const fromPath = path.join(process.cwd(), 'template', 'babel.config.js');
+    const fromPath = path.join(templateDir, 'babel.config.js');
     const toPath = path.join(templateName, 'babel.config.js');
     const regex = {
         presets: /presets\s*=\s*\[(?<presets>(?:\[[^\]]*\]|[^[\]]*)*)\]/d,

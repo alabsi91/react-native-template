@@ -10,6 +10,8 @@ import util from 'util';
 import config from './template.config.js';
 import { copyRecursive, validateProjectName } from './utils.js';
 
+const templateDir = path.join(path.dirname(process.argv[1]).replace('.dev-server', '').replace('dist', ''), 'template');
+
 export const cmd = util.promisify(exec);
 
 export enum OS {
@@ -130,7 +132,7 @@ export async function askForPreInstalledLibs() {
 
 /** - Copy the scripts folder to the new template folder */
 export async function copyScripts(templateName: string) {
-  const fromPath = path.join(process.cwd(), 'template', 'scripts');
+  const fromPath = path.join(templateDir, 'scripts');
   const toPath = path.join(templateName, 'scripts');
 
   if (!existsSync(toPath)) await fs.mkdir(toPath);
@@ -140,14 +142,14 @@ export async function copyScripts(templateName: string) {
 
 /** - Copy react navigation template */
 export async function copyReactNavigationTemplate(templateName: string) {
-  const source = path.join(process.cwd(), 'template', 'reactNavigationTemplate');
+  const source = path.join(templateDir, 'reactNavigationTemplate');
   const target = path.join(templateName, 'src');
   copyRecursive(source, target);
 }
 
 /** - Add `App.tsx` file to the new template folder */
 export async function addAppTsx(templateName: string) {
-  const fromPath = path.join(process.cwd(), 'template', 'App.tsx');
+  const fromPath = path.join(templateDir, 'App.tsx');
   const toPath = path.join(templateName, 'src', 'App.tsx');
   const srcPath = path.join(templateName, 'src');
   if (!existsSync(srcPath)) await fs.mkdir(srcPath);
@@ -233,7 +235,7 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
 export async function addBabelConfig(templateName: string) {
   type RegExpMatchArrayWithIndices = RegExpMatchArray & { indices: Array<[number, number]> };
 
-  const fromPath = path.join(process.cwd(), 'template', 'babel.config.js');
+  const fromPath = path.join(templateDir, 'babel.config.js');
   const toPath = path.join(templateName, 'babel.config.js');
 
   const regex = {
