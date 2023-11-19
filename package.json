@@ -19,7 +19,7 @@
     "build:installer": "node --no-warnings scripts/build-installer.js",
     "build:bundle": "npx esbuild src/index.ts --bundle --platform=node --target=node16 --outdir=bundle --out-extension:.js=.cjs --minify",
     "github-release": "node scripts/release.js",
-    "prepare": "husky install"
+    "prepare": "npm run build:js"
   },
   "dependencies": {
     "chalk": "^5.0.1",
@@ -36,8 +36,7 @@
     "@typescript-eslint/parser": "^5.30.7",
     "esbuild": "^0.14.50",
     "eslint": "^8.20.0",
-    "typescript": "^4.9.5",
-    "husky": "^8.0.0"
+    "typescript": "^4.9.5"
   },
   "eslintConfig": {
     "root": true,
