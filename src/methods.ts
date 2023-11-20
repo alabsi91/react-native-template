@@ -1,6 +1,6 @@
 import chalk from 'chalk';
 import { exec } from 'child_process';
-import { existsSync } from 'fs';
+import { existsSync, realpathSync } from 'fs';
 import fs from 'fs/promises';
 import inquirer from 'inquirer';
 import fetch from 'node-fetch';
@@ -10,7 +10,9 @@ import util from 'util';
 import config from './template.config.js';
 import { copyRecursive, validateProjectName } from './utils.js';
 
-const templateDir = path.join(path.dirname(process.argv[1]).replace('.dev-server', '').replace('dist', ''), 'template');
+let scriptPath = realpathSync(process.argv[1]);
+scriptPath = path.dirname(scriptPath).replace('.dev-server', '').replace('dist', '');
+const templateDir = path.join(scriptPath, 'template');
 
 export const cmd = util.promisify(exec);
 
