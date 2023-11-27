@@ -4,21 +4,21 @@ const config = {
   delete_ios: ['ios', 'Gemfile'],
 
   scripts: [
-    ['💻 dev-server', 'node scripts/startServer.mjs'],
-    ['🔁 reset-cache', 'node scripts/startServer.mjs --reset-cache'],
-    ['🔎 test', 'jest'],
+    ['dev-server', 'node scripts/startServer.mjs'],
+    ['reset-cache', 'node scripts/startServer.mjs --reset-cache'],
+    ['test', 'jest'],
   ],
 
   scripts_android: [
-    ['📱 emulator', 'node scripts/emulator.mjs'],
-    ['📦 build', 'node scripts/build.mjs'],
-    ['⬇️ install-apk', 'node scripts/installApk.mjs'],
-    ['🚀 run-app', 'node scripts/startAppOnDevice.mjs'],
-    ['🔑 generate-signed-key', 'node scripts/generateAndroidKey.mjs'],
-    ['🔌 adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
+    ['emulator', 'node scripts/emulator.mjs'],
+    ['build', 'node scripts/build.mjs'],
+    ['install-apk', 'node scripts/installApk.mjs'],
+    ['run-app', 'node scripts/startAppOnDevice.mjs'],
+    ['generate-signed-key', 'node scripts/generateAndroidKey.mjs'],
+    ['adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
-  scripts_ios: [['🚀 ios', 'react-native run-ios']],
+  scripts_ios: [['ios', 'react-native run-ios']],
 
   scripts_web: [
     ['🌐 start-web', 'expo start --web'],
