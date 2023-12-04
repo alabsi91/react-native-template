@@ -54,7 +54,7 @@ const config = {
     semi: true,
     bracketSpacing: true,
     bracketSameLine: false,
-    endOfLine: 'auto' as const,
+    endOfLine: 'lf' as const,
     singleQuote: true,
   },
 
