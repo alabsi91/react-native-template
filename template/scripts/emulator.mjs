@@ -12,8 +12,10 @@ let devices;
 
 try {
   let { stdout } = await execPromise(`"${emulator}" -list-avds`);
-  const re = /(?<device>.+?)\s+/g;
-  devices = [...stdout.matchAll(re)].map(e => e.groups.device);
+  devices = stdout
+    .split('\n')
+    .filter(e => e.trim() && !e.startsWith('INFO'))
+    .map(e => e.trim());
 } catch (error) {
   console.log(chalk.red('\n⛔ [emulator] is not found in your machine !!\n'));
   process.exit(1);

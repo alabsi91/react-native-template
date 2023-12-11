@@ -17,8 +17,10 @@ let apkName;
 
 try {
   let { stdout } = await execPromise(`"${adb}" devices`);
-  const re = /(?<device>.+?)\s+device\b/g;
-  devices = [...stdout.matchAll(re)].map(e => e.groups.device);
+  devices = stdout
+    .split('\n')
+    .filter(e => e.trim() && !e.startsWith('List'))
+    .map(e => e.replace(/\s+.+/, '').trim());
 } catch (error) {
   console.log(chalk.red('\n⛔ [adb] is not found on your machine !!\n'));
   process.exit(1);
