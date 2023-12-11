@@ -28,7 +28,6 @@ import {
 import { installWindows } from './Windows/addWindowsSupport.js';
 import { webScript } from './Web/addWebSupport.js';
 import { addGlobalTypes, configureMetroForSVG } from './All/rnSvgSetup.js';
-import { addKotlinDependency, addKotlinVersion } from './Android/addKotlinVersion.js';
 import { fixMainActivity, fixPageTransition } from './Android/rnScreensFix.js';
 import { enableSeparateBuild } from './Android/enableSeparateBuild.js';
 import config from './template.config.js';
@@ -130,16 +129,6 @@ async function app() {
       await fixPageTransition(inputs.name);
     } catch (error) {
       loading.error('Error while applying a fix for react-native-screens on Android !!');
-    }
-  }
-
-  // * add kotlin for Android
-  if (isAndroid) {
-    try {
-      await addKotlinVersion(inputs.name);
-      await addKotlinDependency(inputs.name);
-    } catch (error) {
-      loading.error('Error adding kotlin version to build.gradle file !!');
     }
   }
 
@@ -263,7 +252,7 @@ async function app() {
   try {
     await runVSCode(inputs.name);
   } catch (error) {
-    loading.error('Error while opening with VSCode !!');
+    // ignore
   }
 
   loading.success('Done!!');

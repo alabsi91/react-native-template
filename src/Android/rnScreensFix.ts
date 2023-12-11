@@ -3,15 +3,14 @@ import path from 'path';
 
 /** - Fix for react native screens */
 export async function fixMainActivity(templateName: string) {
-  const pathJavaMain = path.join(templateName, 'android', 'app', 'src', 'main', 'java', 'com', templateName, 'MainActivity.java');
+  const pathJavaMain = path.join(templateName, 'android', 'app', 'src', 'main', 'java', 'com', templateName, 'MainActivity.kt');
   const fileStr = await fs.readFile(pathJavaMain, { encoding: 'utf-8' });
   let newStr = fileStr.replace(/(^package.+)(\s)([\s\S]+)/, '$1\n\nimport android.os.Bundle;$3');
   newStr = newStr.replace(
-    /(MainActivity extends ReactActivity[\s\S]+?{)(\s)([\s\S]+)/,
+    /(class MainActivity : ReactActivity\(\)[\s\S]+?{)(\s)([\s\S]+)/,
     `$1
 
-  @Override
-  protected void onCreate(Bundle savedInstanceState) {
+  override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null);
   }
 $3`

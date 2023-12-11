@@ -82,7 +82,7 @@ const config = {
     '@react-native-async-storage/async-storage',
   ],
 
-  babelPresets: ['module:metro-react-native-babel-preset'],
+  babelPresets: ['module:@react-native/babel-preset'],
   babelPlugins: [] as string[],
 
   deps_to_remove: [] as string[],
@@ -135,7 +135,7 @@ const config = {
   ],
 
   tsconfig: {
-    extends: '@tsconfig/react-native/tsconfig.json',
+    extends: '@react-native/typescript-config/tsconfig.json',
     compilerOptions: {
       types: ['react-native', 'jest'],
       baseUrl: '.',
