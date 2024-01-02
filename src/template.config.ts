@@ -15,6 +15,7 @@ const config = {
     ['install-apk', 'node scripts/installApk.mjs'],
     ['run-app', 'node scripts/startAppOnDevice.mjs'],
     ['generate-signed-key', 'node scripts/generateAndroidKey.mjs'],
+    ['fonts-android', 'node scripts/androidFonts.mjs'],
     ['adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
@@ -130,7 +131,7 @@ const config = {
     {
       path: 'react-native.config.js',
       content:
-        "module.exports = {\n  project: {\n    ios: {},\n    android: {},\n  },\n  assets: ['src/assets/fonts/'],\n};\n// run the command `npx react-native-asset` to link fonts.\n// don't forget to rebuild your project.",
+        "module.exports = {\n  project: {\n    ios: {},\n    android: {},\n  },\n  iosAssets: ['src/assets/fonts/'],\n};\n// run the command `npx react-native-asset` to link fonts.\n// don't forget to rebuild your project.",
     },
   ],
 
