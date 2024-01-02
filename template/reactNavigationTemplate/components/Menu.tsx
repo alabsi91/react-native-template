@@ -121,7 +121,7 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
           </RenderConditionally>
 
           <Text
-            style={[{ color: theme.text, fontSize, fontFamily: fontFamily.bold, textAlign: 'center' }, textStyle]}
+            style={[{ color: theme.text, fontSize, ...fontFamily.bold, textAlign: 'center' }, textStyle]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >

@@ -69,7 +69,7 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
 
     return (
       <Pressable style={styles.menuItem} onPress={onPress} android_ripple={{ color: theme.primary }}>
-        <Text style={{ color: theme.text, fontSize: fontSize.normal, fontFamily: fontFamily.regular }} numberOfLines={1}>
+        <Text style={{ color: theme.text, fontSize: fontSize.normal, ...fontFamily.regular }} numberOfLines={1}>
           {item.label}
         </Text>
 
@@ -155,7 +155,7 @@ function OpenButtonDefault({ label = '' }) {
         borderRadius: 10,
         textAlign: 'center',
         fontSize: fontSize.normal,
-        fontFamily: fontFamily.regular,
+        ...fontFamily.regular,
       }}
     >
       {label}

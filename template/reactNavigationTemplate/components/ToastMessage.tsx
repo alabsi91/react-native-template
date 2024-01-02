@@ -144,7 +144,7 @@ const styles = StyleSheet.create({
   message: {
     color: '#fff',
     textAlign: 'center',
-    fontFamily: fontFamily.semiBold,
+    ...fontFamily.semiBold,
   },
   icon: {
     position: 'absolute',

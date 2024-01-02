@@ -169,7 +169,7 @@ const styles = StyleSheet.create({
     backgroundColor: '#1f1f26',
   },
   msg: {
-    fontFamily: fontFamily.regular,
+    ...fontFamily.regular,
     lineHeight: 30,
   },
   buttonsContainer: {

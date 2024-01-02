@@ -58,7 +58,7 @@ const styles = StyleSheet.create({
     gap: 20,
   },
   title: {
-    fontFamily: fontFamily.bold,
+    ...fontFamily.bold,
     marginRight: 45,
   },
   childrenContainer: {

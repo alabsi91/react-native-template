@@ -1,12 +1,12 @@
 import { useWindowDimensions } from 'react-native';
 
 export const fontFamily = {
-  semiBold: 'SignikaNegative-SemiBold',
-  regular: 'SignikaNegative-Regular',
-  medium: 'SignikaNegative-Medium',
-  light: 'SignikaNegative-Light',
-  bold: 'SignikaNegative-Bold',
-};
+  light: { fontFamily: 'SignikaNegative', fontWeight: '300' },
+  regular: { fontFamily: 'SignikaNegative', fontWeight: '400' },
+  medium: { fontFamily: 'SignikaNegative', fontWeight: '500' },
+  semiBold: { fontFamily: 'SignikaNegative', fontWeight: '600' },
+  bold: { fontFamily: 'SignikaNegative', fontWeight: '700' },
+} as const;
 
 /**
  * A React hook that returns a responsive font size depending on the window width

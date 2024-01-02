@@ -88,7 +88,7 @@ const styles = StyleSheet.create({
     paddingHorizontal: 60,
   },
   tagLine: {
-    fontFamily: fontFamily.regular,
+    ...fontFamily.regular,
     marginTop: 30,
     marginBottom: 10,
   },

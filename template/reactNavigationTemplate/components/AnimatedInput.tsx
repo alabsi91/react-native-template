@@ -136,7 +136,7 @@ const AnimatedInput = forwardRef<AnimatedInputRef, Props>(
         />
         <Animated.View style={[styles.titleContainer, titleContainerStyle]} pointerEvents='none'>
           <Animated.View style={[styles.line, titleBackgroundStyle, { backgroundColor: theme.background }]} />
-          <Animated.Text style={[titleStyle, { fontSize: fontSize.normal, fontFamily: fontFamily.medium }]}>
+          <Animated.Text style={[titleStyle, { fontSize: fontSize.normal, ...fontFamily.medium }]}>
             {placeholder}
           </Animated.Text>
         </Animated.View>
@@ -168,7 +168,7 @@ const styles = StyleSheet.create({
     height: '100%',
   },
   input: {
-    fontFamily: fontFamily.medium,
+    ...fontFamily.medium,
     paddingHorizontal: 20,
     paddingVertical: 10,
   },

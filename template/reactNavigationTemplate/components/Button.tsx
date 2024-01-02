@@ -76,7 +76,7 @@ const styles = StyleSheet.create({
     alignItems: 'center',
   },
   text: {
-    fontFamily: fontFamily.regular,
+    ...fontFamily.regular,
     flexGrow: 1,
     fontSize: 16,
     textAlign: 'center',
