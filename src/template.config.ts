@@ -4,27 +4,26 @@ const config = {
   delete_ios: ['ios', 'Gemfile'],
 
   scripts: [
-    ['dev-server', 'node scripts/startServer.mjs'],
-    ['reset-cache', 'node scripts/startServer.mjs --reset-cache'],
+    ['dev-server', 'rn-tools start-server'],
+    ['reset-cache', 'rn-tools start-server -c'],
+    ['rn-tools', 'rn-tools'],
     ['test', 'jest'],
   ],
 
   scripts_android: [
-    ['emulator', 'node scripts/emulator.mjs'],
-    ['build', 'node scripts/build.mjs'],
-    ['install-apk', 'node scripts/installApk.mjs'],
-    ['run-app', 'node scripts/startAppOnDevice.mjs'],
-    ['generate-signed-key', 'node scripts/generateAndroidKey.mjs'],
-    ['fonts-android', 'node scripts/androidFonts.mjs'],
+    ['emulator', 'rn-tools emulator'],
+    ['build', 'rn-tools build'],
+    ['install-apk', 'rn-tools install-apk'],
+    ['run-app', 'rn-tools launch-app'],
     ['adb-wireless', 'adb connect 192.168.1.112:5555 || adb tcpip 5555'],
   ],
 
   scripts_ios: [['ios', 'react-native run-ios']],
 
   scripts_web: [
-    ['🌐 start-web', 'expo start --web'],
-    ['🌐 build-web', 'expo export:web'],
-    ['🌐 customize-web', 'expo customize'],
+    ['start-web', 'expo start --web'],
+    ['build-web', 'expo export:web'],
+    ['customize-web', 'expo customize'],
   ],
 
   eslint: {
@@ -91,6 +90,8 @@ const config = {
   dep_to_add: [] as string[][],
 
   dev_deps_to_add: [
+    ['rn-tools', 'github:alabsi91/react-native-tools-cli'],
+    ['patch-package', 'latest'],
     ['@typescript-eslint/eslint-plugin', 'latest'],
     ['babel-plugin-transform-remove-console', 'latest'],
     ['babel-plugin-module-resolver', 'latest'],
