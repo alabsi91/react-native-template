@@ -1,6 +1,6 @@
 import fs from 'fs/promises';
 import path from 'path';
-import prettier from 'prettier';
+import * as prettier from 'prettier';
 
 import config from '../template.config.js';
 
@@ -11,7 +11,7 @@ export async function webScript(templateName: string) {
       '@babel/plugin-proposal-export-namespace-from',
       '@babel/plugin-proposal-optional-chaining',
       '@babel/plugin-transform-modules-commonjs',
-    ]
+    ],
   );
 
   // modify index.js
@@ -26,7 +26,7 @@ if (Platform.OS === 'web') {
 }
 `;
 
-  const formattedString = prettier.format(str, { ...config.prettier, parser: 'babel' });
+  const formattedString = await prettier.format(str, { ...config.prettier, parser: 'babel' });
 
   await fs.writeFile(indexPath, formattedString, { encoding: 'utf-8' });
 }

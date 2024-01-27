@@ -1,27 +1,16 @@
-import chalk from 'chalk';
-import { exec } from 'child_process';
-import { existsSync, realpathSync } from 'fs';
+import { existsSync } from 'fs';
 import fs from 'fs/promises';
-import inquirer from 'inquirer';
 import fetch from 'node-fetch';
 import path from 'path';
-import prettier from 'prettier';
-import util from 'util';
+import * as prettier from 'prettier';
+
+import { $, CONSTANTS } from '@cli/terminal.js';
+import { copyRecursive } from '@utils/utils.js';
 import config from './template.config.js';
-import { copyRecursive, validateProjectName } from './utils.js';
+import { OS } from './types.js';
 
-let scriptPath = realpathSync(process.argv[1]);
-scriptPath = path.dirname(scriptPath).replace('.dev-server', '').replace('dist', '');
+const scriptPath = CONSTANTS.projectRoot;
 const templateDir = path.join(scriptPath, 'template');
-
-export const cmd = util.promisify(exec);
-
-export enum OS {
-  Android = 'Android',
-  IOS = 'IOS',
-  Web = 'Web',
-  Windows = 'Windows',
-}
 
 type packageJsonType = {
   name: string;
@@ -33,105 +22,6 @@ type packageJsonType = {
   prettier: typeof config.prettier;
 };
 
-/** Ask the user for the template project name */
-export async function askForProjectName(): Promise<string> {
-  type answersT = { name: string };
-
-  const { name } = await inquirer.prompt<answersT>([
-    {
-      type: 'input',
-      name: 'name',
-      default: 'myproject',
-      message: 'Please enter the new project name : ',
-    },
-  ]);
-
-  try {
-    validateProjectName(name);
-  } catch (error) {
-    console.log('\n⛔', chalk.red.bold(error), '\n');
-    return askForProjectName();
-  }
-
-  if (existsSync(name)) {
-    console.log(chalk.red.bold(`\n⛔ "${name}" directory already exists !!\n`));
-    return askForProjectName();
-  }
-
-  return name;
-}
-
-/** - Ask the user which platforms to include */
-export async function askForPlatforms() {
-  type answersT = { platforms: [OS.Android, OS.IOS, OS.Web, OS.Windows] };
-
-  const { platforms } = await inquirer.prompt<answersT>([
-    {
-      type: 'checkbox',
-      name: 'platforms',
-      default: [true, false],
-      choices: [
-        { checked: true, name: OS.Android },
-        { checked: false, name: OS.IOS },
-        { checked: false, name: OS.Web },
-        { checked: false, name: OS.Windows },
-      ],
-      message: 'Please choose the template platforms : ',
-    },
-  ]);
-
-  return platforms;
-}
-
-/** - Ask the user if to install dependencies */
-export async function askForInstallingDeps() {
-  type answersT = { installDeps: boolean };
-
-  const { installDeps } = await inquirer.prompt<answersT>([
-    {
-      type: 'confirm',
-      name: 'installDeps',
-      default: true,
-      message: 'Do you want to install the dependencies : ',
-    },
-  ]);
-
-  return installDeps;
-}
-
-/** - Ask the user if to keep jest */
-export async function askForKeepingJest() {
-  type answersT = { keepJest: boolean };
-
-  const { keepJest } = await inquirer.prompt<answersT>([
-    {
-      type: 'confirm',
-      name: 'keepJest',
-      default: false,
-      message: 'Do you want to keep jest : ',
-    },
-  ]);
-
-  return keepJest;
-}
-
-/** - Ask the user for pre-installed libraries */
-export async function askForPreInstalledLibs() {
-  type answersT = { libs: string[] };
-
-  const { libs } = await inquirer.prompt<answersT>([
-    {
-      type: 'checkbox',
-      name: 'libs',
-      pageSize: config.preLibs.length,
-      choices: config.preLibs.map(l => ({ name: l })),
-      message: 'Choose what library to pre-install : ',
-    },
-  ]);
-
-  return libs;
-}
-
 /** - Copy the scripts folder to the new template folder */
 export async function copyScripts(templateName: string) {
   const fromPath = path.join(templateDir, 'scripts');
@@ -142,8 +32,18 @@ export async function copyScripts(templateName: string) {
   for (const file of scripts) await fs.copyFile(path.join(fromPath, file), path.join(toPath, file));
 }
 
+/** - Copy the patches folder to the new template folder */
+export async function copyPatches(templateName: string) {
+  const fromPath = path.join(templateDir, 'patches');
+  const toPath = path.join(templateName, 'patches');
+
+  if (!existsSync(toPath)) await fs.mkdir(toPath);
+  const scripts = await fs.readdir(fromPath);
+  for (const file of scripts) await fs.copyFile(path.join(fromPath, file), path.join(toPath, file));
+}
+
 /** - Copy react navigation template */
-export async function copyReactNavigationTemplate(templateName: string) {
+export function copyReactNavigationTemplate(templateName: string) {
   const source = path.join(templateDir, 'reactNavigationTemplate');
   const target = path.join(templateName, 'src');
   copyRecursive(source, target);
@@ -160,9 +60,10 @@ export async function addAppTsx(templateName: string) {
 
 /** - Get the latest version string for a package from `npm` */
 export async function getPkgVersion(pkg: string) {
-  type responseT = { name: string; version: string };
+  type Response = { name: string; version: string } | 'Not Found';
   const res = await fetch(`https://registry.npmjs.org/${pkg}/latest`);
-  const json = (await res.json()) as responseT;
+  const json = (await res.json()) as Response;
+  if (json === 'Not Found') return '*';
   return `^${json.version.trim()}`;
 }
 
@@ -228,7 +129,7 @@ export async function editPackageJson(templateName: string, platforms: OS[]) {
       json.devDependencies[pkg] = ver === 'latest' ? await getPkgVersion(pkg) : ver;
     }
   }
-  const formattedString = prettier.format(JSON.stringify(json), { ...config.prettier, parser: 'json' });
+  const formattedString = await prettier.format(JSON.stringify(json), { ...config.prettier, parser: 'json' });
 
   await fs.writeFile(packageJsonPath, formattedString, { encoding: 'utf-8' });
 }
@@ -261,7 +162,7 @@ export async function addBabelConfig(templateName: string) {
     file = file.slice(0, insertAt) + config.babelPresets.map(e => `'${e}'`).join(',') + file.slice(insertAt);
   }
 
-  const formattedString = prettier.format(file, { ...config.prettier, parser: 'babel' });
+  const formattedString = await prettier.format(file, { ...config.prettier, parser: 'babel' });
 
   await fs.writeFile(toPath, formattedString, { encoding: 'utf-8' });
 }
@@ -276,7 +177,7 @@ export async function editIndexJs(templateName: string) {
     .replace('./App', './src/App')
     .replace(/\/\*\*[\s\S]*?\*\/\n/g, ''); // remove comment blocks
 
-  const formattedString = prettier.format(newStr, { ...config.prettier, parser: 'babel' });
+  const formattedString = await prettier.format(newStr, { ...config.prettier, parser: 'babel' });
 
   await fs.writeFile(indexPath, formattedString, { encoding: 'utf-8' });
 }
@@ -284,18 +185,18 @@ export async function editIndexJs(templateName: string) {
 /** - Edit `tsconfig.json` file */
 export async function edit_tsconfigJson(templateName: string) {
   const tsPath = path.join(templateName, 'tsconfig.json');
-  const formattedString = prettier.format(JSON.stringify(config.tsconfig), { ...config.prettier, parser: 'json' });
+  const formattedString = await prettier.format(JSON.stringify(config.tsconfig), { ...config.prettier, parser: 'json' });
   await fs.writeFile(tsPath, formattedString, { encoding: 'utf-8' });
 }
 
 /** - Install npm dependencies */
-export async function installDependencies(templateName: string) {
-  await cmd('npm i --force', { cwd: templateName });
+export async function installDeps(templateName: string) {
+  await $`npm i --force ${{ cwd: templateName }}`;
 }
 
 /** - Open `VSCode` */
 export async function runVSCode(templateName: string) {
-  await cmd('code .', { cwd: templateName });
+  await $`code . ${{ cwd: templateName }}`;
 }
 
 /** - Change config file to remove jest */

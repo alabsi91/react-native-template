@@ -7,6 +7,7 @@ const config = {
     ['dev-server', 'rn-tools start-server'],
     ['reset-cache', 'rn-tools start-server -c'],
     ['rn-tools', 'rn-tools'],
+    ['postinstall', 'patch-package'],
     ['test', 'jest'],
   ],
 

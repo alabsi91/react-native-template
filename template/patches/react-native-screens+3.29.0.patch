@@ -1,0 +1,104 @@
+diff --git a/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_enter_in.xml b/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_enter_in.xml
+index 4398c7e..c94bdac 100644
+--- a/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_enter_in.xml
++++ b/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_enter_in.xml
+@@ -5,7 +5,7 @@
+         android:fromAlpha="0"
+         android:toAlpha="1.0"
+         android:startOffset="100"
+-        android:duration="100"/>
++        android:duration="200"/>
+     <scale
+         android:interpolator="@android:interpolator/accelerate_decelerate"
+         android:fromXScale="0.85"
+@@ -14,5 +14,5 @@
+         android:toYScale="1"
+         android:pivotX="50%"
+         android:pivotY="50%"
+-        android:duration="200"/>
++        android:duration="300"/>
+ </set>
+diff --git a/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_exit_out.xml b/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_exit_out.xml
+index b20a184..1fd920d 100644
+--- a/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_exit_out.xml
++++ b/node_modules/react-native-screens/android/src/main/res/base/anim/rns_default_exit_out.xml
+@@ -5,8 +5,8 @@
+     <alpha
+         android:fromAlpha="1"
+         android:toAlpha="0.0"
+-        android:startOffset="50"
+-        android:duration="100"/>
++        android:startOffset="75"
++        android:duration="150"/>
+     <scale
+         android:fromXScale="1"
+         android:toXScale="0.85"
+@@ -14,5 +14,5 @@
+         android:toYScale="0.85"
+         android:pivotX="50%"
+         android:pivotY="50%"
+-        android:duration="200"/>
++        android:duration="250"/>
+ </set>
+diff --git a/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_enter_in.xml b/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_enter_in.xml
+index 654c80b..c7df486 100644
+--- a/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_enter_in.xml
++++ b/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_enter_in.xml
+@@ -10,8 +10,8 @@
+         android:fillBefore="true"
+         android:fillAfter="true"
+         android:interpolator="@android:anim/linear_interpolator"
+-        android:startOffset="50"
+-        android:duration="83" />
++        android:startOffset="150"
++        android:duration="183" />
+ 
+     <translate
+         android:fromXDelta="10%"
+@@ -21,7 +21,7 @@
+         android:fillAfter="true"
+         android:startOffset="0"
+         android:interpolator="@android:interpolator/fast_out_extra_slow_in"
+-        android:duration="450" />
++        android:duration="550" />
+ 
+     <extend
+         android:fromExtendLeft="10%"
+@@ -34,5 +34,5 @@
+         android:toExtendBottom="0"
+         android:interpolator="@android:interpolator/fast_out_extra_slow_in"
+         android:startOffset="0"
+-        android:duration="450" />
++        android:duration="550" />
+ </set>
+diff --git a/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_exit_out.xml b/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_exit_out.xml
+index ba4d84d..804409a 100644
+--- a/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_exit_out.xml
++++ b/node_modules/react-native-screens/android/src/main/res/v33/anim-v33/rns_default_exit_out.xml
+@@ -10,8 +10,8 @@
+         android:fillBefore="true"
+         android:fillAfter="true"
+         android:interpolator="@android:interpolator/linear"
+-        android:startOffset="35"
+-        android:duration="83" />
++        android:startOffset="85"
++        android:duration="133" />
+ 
+     <translate
+         android:fromXDelta="0"
+@@ -21,7 +21,7 @@
+         android:fillAfter="true"
+         android:interpolator="@android:interpolator/fast_out_extra_slow_in"
+         android:startOffset="0"
+-        android:duration="450" />
++        android:duration="500" />
+ 
+     <extend
+         android:fromExtendLeft="10%"
+@@ -34,5 +34,5 @@
+         android:toExtendBottom="0"
+         android:interpolator="@android:interpolator/fast_out_extra_slow_in"
+         android:startOffset="0"
+-        android:duration="450" />
++        android:duration="500" />
+ </set>

@@ -16,7 +16,7 @@ export async function enableSeparateBuild(templateName: string) {
             universalApk true
             include "armeabi-v7a", "arm64-v8a", "x86", "x86_64"
         }
-    }`
+    }`,
     )
     .replace(/\s*\/\*[\s\S]*?\*\//gm, '') // remove comment blocks
     .replace(/\s*\/\/.*$/gm, ''); // remove inline comments

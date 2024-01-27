@@ -28,10 +28,11 @@ benchmarks/graphs
 
 .dev-server
 
+dist
+
 bundle
 
 /*.tgz
 
 installer
 
-dist

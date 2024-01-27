@@ -31,7 +31,7 @@ const { assetExts, sourceExts } = defaultConfig.resolver;` +
     assetExts: assetExts.filter((ext) => ext !== 'svg'),
     sourceExts: [...sourceExts, 'svg'],
   },
-$3`
+$3`,
   );
 
   await fs.writeFile(metroConfigPath, modifiedStr, { encoding: 'utf-8' });

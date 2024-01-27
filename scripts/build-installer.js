@@ -5,6 +5,10 @@ import * as fs from 'fs/promises';
 import fetch from 'node-fetch';
 import path from 'path';
 import { promisify } from 'util';
+import * as esbuild from 'esbuild';
+
+import { cmd_script, ps1_script, sh_script } from './launch-scripts.js';
+
 const cmd = promisify(exec);
 
 // ? ⚠️ install NSIS via powershell `winget install NSIS.NSIS`
@@ -12,14 +16,16 @@ const cmd = promisify(exec);
 const outFolder = 'installer',
   outJsFile = 'index.cjs',
   entryFile = 'src/index.ts',
-  nodeVersion = '18.6.0',
-  nodeDownloadLink = `https://nodejs.org/dist/v${nodeVersion}/win-x64/node.exe`,
-  makensis = path.normalize('C:/Program Files (x86)/NSIS/makensis.exe'), // NSIS cli path.
+  nodeVersion = 'latest-v18.x',
+  nodeDownloadLink = `https://nodejs.org/dist/${nodeVersion}/win-x64/node.exe`,
+  makeNsis = path.normalize('C:/Program Files (x86)/NSIS/makensis.exe'), // NSIS cli path.
+  includeAssets = ['template'], // files or folders to be included in the installer.
   includeNodejs = false, // include nodejs in the installer. makes the installer larger in size.
   cleanAfterBuild = false; // 🗑️ remove all files after build except `installer.exe`
 
 (async function () {
   let progress;
+  let includeAssetsNsisString = '';
 
   // * 👓 read package.json
   const { name, version, description } = JSON.parse(await fs.readFile('package.json'));
@@ -30,14 +36,14 @@ const outFolder = 'installer',
   // * ⬇️ download node.exe
   if (!existsSync(path.join(outFolder, 'node.exe')) && includeNodejs) {
     try {
-      progress = loading(`- Downloading "node.exe v${nodeVersion}" ...`);
+      progress = loading(`- Downloading "node.exe ${nodeVersion}" ...`);
       const res = await fetch(nodeDownloadLink),
         nodeArrayBuffer = await res.arrayBuffer(),
         nodeFile = Buffer.from(nodeArrayBuffer);
       await fs.writeFile(path.join(outFolder, 'node.exe'), nodeFile);
       progress(`- node.exe v${nodeVersion} downloaded!`);
     } catch (error) {
-      progress(`Error: downloading node.exe v${nodeVersion} failed!`, true);
+      progress(`Error: downloading node.exe ${nodeVersion} failed!`, true);
       return;
     }
   }
@@ -50,32 +56,55 @@ const outFolder = 'installer',
 
   // * 📋 copy files from scripts folder
   try {
-    progress = loading(`- Copying assets files to "${outFolder}" folder ...`);
-    for (const file of await fs.readdir(path.normalize('scripts/installer-assets')))
-      await fs.copyFile(path.normalize(`scripts/installer-assets/${file}`), path.normalize(`${outFolder}/${file}`));
-    progress('- Assets files copied successfully!');
+    progress = loading(`- Copying installer scripts files to "${outFolder}" folder ...`);
+    await recursiveCopy(path.normalize('scripts/installer-assets/'), path.normalize(outFolder));
+    progress('- Files copied successfully!');
   } catch (error) {
-    progress('Error: copying assets files failed!', true);
-    return;
+    progress('Error: copying scripts files failed!', true);
   }
 
-  // * 📋 copy files from template folder
+  // * 📋 copy included assets
   try {
-    progress = loading(`- Copying scripts files to "${outFolder}" folder ...`);
-    await recursiveCopy('template', path.normalize(`${outFolder}/template`));
-    progress('- Scripts files copied successfully!');
+    progress = loading(`- Copying included assets to "${outFolder}" folder ...`);
+    for (const asset of includeAssets) {
+      if (!existsSync(asset)) {
+        console.log(chalk.red(`Error: path "${asset}" not found!`));
+        continue;
+      }
+
+      await recursiveCopy(path.normalize(asset), path.join(outFolder, asset));
+
+      const isDirectory = (await fs.stat(asset)).isDirectory();
+      if (isDirectory) {
+        includeAssetsNsisString += `  File /r "${path.basename(asset)}"\n`;
+        continue;
+      }
+
+      includeAssetsNsisString += `  File "${path.basename(asset)}"\n`;
+    }
+
+    progress('- Included assets copied successfully!');
   } catch (error) {
-  console.log(error);
-    progress('Error: copying scripts files failed!', true);
+    console.log('error :', error);
+    progress('- Error: copying include files failed!', true);
     return;
   }
 
   // * 📦 bundle outJsFile
   try {
     progress = loading('- Bundling JavaScript files ...');
-    await cmd(
-      `npx esbuild ${entryFile} --bundle --platform=node --target=node16 --outdir=${outFolder} --out-extension:.js=.cjs --minify`
-    );
+    await esbuild.build({
+      entryPoints: [entryFile],
+      outdir: outFolder,
+      platform: 'node',
+      target: ['node16'],
+      outExtension: { '.js': '.cjs' },
+      bundle: true,
+      minify: true,
+      define: { 'import.meta.url': 'import_meta_url' },
+      inject: ['./import-meta-url.js'],
+      treeShaking: true,
+    });
     progress('- JavaScript files Bundled successfully!');
   } catch (error) {
     progress('- Error while bundling JavaScript files !!', true);
@@ -85,13 +114,30 @@ const outFolder = 'installer',
   // * 📝 create .cmd file
   try {
     progress = loading(`- Creating "${name}.cmd" file ...`);
-    await fs.writeFile(
-      `${outFolder}/${name}.cmd`,
-      `@echo off\n\nif exist "%~dp0node.exe" ("%~dp0node.exe" "%~dp0${outJsFile}" %*) else (node "%~dp0${outJsFile}" %*)`
-    );
+    await fs.writeFile(`${outFolder}/${name}.cmd`, cmd_script(outJsFile));
     progress(`- "${name}.cmd" file created successfully!`);
   } catch (error) {
     progress('- Error while creating .cmd file!', true);
+    return;
+  }
+
+  // * 📝 create .ps1 file
+  try {
+    progress = loading(`- Creating "${name}.ps1" file ...`);
+    await fs.writeFile(`${outFolder}/${name}.ps1`, ps1_script(outJsFile));
+    progress(`- "${name}.ps1" file created successfully!`);
+  } catch (error) {
+    progress('- Error while creating .ps1 file!', true);
+    return;
+  }
+
+  // * 📝 create sh file
+  try {
+    progress = loading(`- Creating "${name}" file ...`);
+    await fs.writeFile(`${outFolder}/${name}`, sh_script(outJsFile));
+    progress(`- "${name}" sh file created successfully!`);
+  } catch (error) {
+    progress('- Error while creating sh file!', true);
     return;
   }
 
@@ -104,7 +150,8 @@ const outFolder = 'installer',
       .replace('!define AppVersion ""', `!define AppVersion "v${version}"`) // inject AppVersion
       .replace('!define AppDescription ""', `!define AppDescription "${description}"`) // inject AppDescription
       .replace('!define JsFile ""', `!define JsFile "${outJsFile}"`) // inject JsFile name
-      .replace('Section "Node.js"', `Section "node.js v${nodeVersion}"`); // inject Node.js version
+      .replace('Section "Node.js"', `Section "node.js v${nodeVersion}"`) // inject Node.js version
+      .replace(/\s\s;\s{assetsFiles}.+/, includeAssetsNsisString); // inject included assets
     // remove Node.js component if not included in the installer.
     if (!includeNodejs) {
       newInstallerNsi = newInstallerNsi
@@ -121,7 +168,7 @@ const outFolder = 'installer',
   // * 💿 create the installer
   try {
     progress = loading('- Creating NSIS installer ...');
-    await cmd(`"${makensis}" "${path.resolve(path.normalize(`${outFolder}/installer.nsi`))}"`);
+    await cmd(`"${makeNsis}" "${path.resolve(path.normalize(`${outFolder}/installer.nsi`))}"`);
     progress('- NSIS installer created successfully!');
   } catch (e) {
     progress('- Error creating NSIS installer ...', true);
@@ -163,14 +210,13 @@ async function recursiveCopy(source, target) {
 
   if (sourceStats.isDirectory()) {
     await fs.mkdir(target, { recursive: true });
-
     const files = await fs.readdir(source);
 
     for (const file of files) {
       const sourcePath = path.join(source, file);
       const targetPath = path.join(target, file);
 
-      await recursiveCopy(sourcePath, targetPath);
+      await recursiveCopy(sourcePath, targetPath, false);
     }
   } else if (sourceStats.isFile()) {
     await fs.copyFile(source, target);

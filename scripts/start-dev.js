@@ -1,4 +1,4 @@
-import esbuild from 'esbuild';
+import * as esbuild from 'esbuild';
 import chalk from 'chalk';
 import { spawn } from 'child_process';
 
@@ -7,38 +7,50 @@ const entryPoint = './src/index.ts';
 
 let worker;
 
+const plugins = [
+  {
+    name: 'my-plugin',
+    setup(build) {
+      build.onEnd(result => {
+        if (result.errors.length) {
+          console.error(chalk.red('⛔ Build failed !!'));
+          console.log(chalk.yellow('\n🕐 Waiting for new changes ...\n'));
+          return;
+        }
+
+        // run if file changes
+        run();
+      });
+    },
+  },
+];
+
 (async function () {
   // 📦 bundle typescript files into one js file, and watch for changes.
   try {
-    await esbuild.build({
+    const context = await esbuild.context({
       entryPoints: [entryPoint],
       external: ['./node_modules/*'],
       platform: 'node',
       outfile,
       format: 'esm',
+      sourcemap: true,
       bundle: true,
-      define: { DEBUG: 'true' },
-      watch: {
-        async onRebuild(error) {
-          if (error) {
-            console.error(chalk.red('⛔ Build failed !!'));
-            console.log(chalk.yellow('\n🕐 Waiting for new changes ...\n'));
-            return;
-          }
-
-          run(); // run if file changes
-        },
+      define: {
+        'process.env.NODE_ENV': '"development"',
       },
+      plugins,
     });
 
-    run(); // first run
+    // Enable watch mode
+    await context.watch();
   } catch (error) {
-    console.log(error);
+    console.error(error);
   }
 })();
 
 // to run bundled file.
-async function run() {
+function run() {
   // 🔪 kill last spawned worker
   if (worker) {
     try {
@@ -52,14 +64,12 @@ async function run() {
   console.clear();
 
   //🔥 start new worker
-  console.log(chalk.yellow(`\n👀 Watching for changes in "./src/**/*" ...\n`));
-  worker = spawn('node', [outfile], {
-    stdio: 'inherit',
-  });
+  console.log(chalk.yellow('\n👀 Watching for changes in "./src/**/*" ...\n'));
+  worker = spawn('node', ['--enable-source-maps', outfile], { stdio: 'inherit' });
 
   //👂 listen for worker exit signal.
-  worker.on('exit', async code => {
+  worker.on('exit', code => {
     if (code !== 0) return;
-    console.log(chalk.yellow(`\n\n🕐 Waiting for new changes ...`));
+    console.log(chalk.yellow('\n\n🕐 Waiting for new changes ...'));
   });
 }

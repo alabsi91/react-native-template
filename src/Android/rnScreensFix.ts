@@ -13,7 +13,7 @@ export async function fixMainActivity(templateName: string) {
   override fun onCreate(savedInstanceState: Bundle?) {
     super.onCreate(null);
   }
-$3`
+$3`,
   );
 
   await fs.writeFile(pathJavaMain, newStr, { encoding: 'utf-8' });
@@ -32,7 +32,7 @@ export async function fixPageTransition(templateName: string) {
   const stylesStr = await fs.readFile(stylesPath, { encoding: 'utf-8' });
   const newStr = stylesStr.replace(
     '</style>',
-    '    <item name="android:windowBackground">@drawable/alpha_screen</item>\n    </style>'
+    '    <item name="android:windowBackground">@drawable/alpha_screen</item>\n    </style>',
   );
   await fs.writeFile(stylesPath, newStr, { encoding: 'utf-8' });
 }

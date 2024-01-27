@@ -18,9 +18,7 @@ module.exports = function (api) {
   }
 
   const presets = [];
-  const plugins = [
-    [require.resolve('babel-plugin-module-resolver'), { alias }],
-  ];
+  const plugins = [[require.resolve('babel-plugin-module-resolver'), { alias }]];
 
   return {
     presets,

@@ -19,88 +19,56 @@ const colors = {
 };
 
 const resetColors = '\x1b[0m';
-
 const textColor = (color: number) => `\x1b[${color}m`;
 const bgColor = (color: number) => `\x1b[${color + 10}m`;
 
-export default class Log {
-  static debug = (message: string) => {
-    console.log(
-      textColor(colors.whiteBright) +
-        '| ' +
-        resetColors +
-        bgColor(colors.whiteBright) +
-        textColor(colors.black) +
-        '  DEBUG  ' +
-        resetColors +
-        textColor(colors.whiteBright) +
-        ' |',
-      message,
-      resetColors
-    );
-  };
-
-  static warn = (message: string) => {
-    console.log(
-      textColor(colors.yellow) +
-        '| ' +
-        resetColors +
-        bgColor(colors.yellow) +
-        textColor(colors.black) +
-        ' WARNING ' +
-        resetColors +
-        textColor(colors.yellow) +
-        ' |',
-      message,
-      resetColors
-    );
-  };
-
-  static info = (message: string) => {
-    console.log(
-      textColor(colors.cyanBright) +
-        '| ' +
-        resetColors +
-        bgColor(colors.cyan) +
-        textColor(colors.black) +
-        '  INFO   ' +
-        resetColors +
-        textColor(colors.cyanBright) +
-        ' |',
-      message,
-      resetColors
-    );
-  };
-
-  static error = (message: string) => {
-    console.log(
-      textColor(colors.redBright) +
-        '| ' +
-        resetColors +
-        bgColor(colors.red) +
-        textColor(colors.black) +
-        '  ERROR  ' +
-        resetColors +
-        textColor(colors.redBright) +
-        ' |',
-      message,
-      resetColors
-    );
-  };
-
-  static success = (message: string) => {
-    console.log(
-      textColor(colors.greenBright) +
-        '| ' +
-        resetColors +
-        bgColor(colors.greenBright) +
-        textColor(colors.black) +
-        ' SUCCESS ' +
-        resetColors +
-        textColor(colors.greenBright) +
-        ' |',
-      message,
-      resetColors
-    );
-  };
+/** | TYPE | MESSAGE .... `TRACE` */
+function format(type: string, color: number, message: string, trace?: string) {
+  const traceFormat = trace ? textColor(colors.grey) + ''.padStart(50 - message.length, '.') + ` \`${trace}\`` : '';
+  return (
+    textColor(color) +
+    '|' +
+    resetColors +
+    bgColor(color) +
+    textColor(colors.black) +
+    type +
+    resetColors +
+    textColor(color) +
+    '| ' +
+    textColor(color) +
+    message +
+    ' ' +
+    traceFormat +
+    resetColors
+  );
 }
+
+export default function Log(message?: string) {
+  if (!__DEV__ || !message) return;
+  console.log(format('   LOG   ', colors.whiteBright, message, ''));
+}
+
+Log.debug = (message: string, trace?: string) => {
+  if (!__DEV__) return;
+  console.log(format('  DEBUG  ', colors.whiteBright, message, trace));
+};
+
+Log.warn = (message: string, trace?: string) => {
+  if (!__DEV__) return;
+  console.log(format(' WARNING ', colors.yellow, message, trace));
+};
+
+Log.info = (message: string, trace?: string) => {
+  if (!__DEV__) return;
+  console.log(format('  INFO   ', colors.cyanBright, message, trace));
+};
+
+Log.error = (message: string, trace?: string) => {
+  if (!__DEV__) return;
+  console.log(format('  ERROR  ', colors.redBright, message, trace));
+};
+
+Log.success = (message: string, trace?: string) => {
+  if (!__DEV__) return;
+  console.log(format(' SUCCESS ', colors.greenBright, message, trace));
+};

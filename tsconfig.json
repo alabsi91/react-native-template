@@ -1,5 +1,14 @@
 {
   "compilerOptions": {
+    "baseUrl": ".",
+    "paths": {
+      "@schema": ["src/cli-tools/commandSchema/index.ts"],
+      "@commands/*": ["src/commands/*"],
+      "@utils/*": ["src/utils/*"],
+      "@cli/*": ["src/cli-tools/*"],
+      "@/*": ["src/*"],
+      "@types": ["src/types.js"]
+    },
     "module": "Node16",
     "target": "ESNext",
     "outDir": "dist",
@@ -7,9 +16,10 @@
     "strict": true,
     "esModuleInterop": true,
     "forceConsistentCasingInFileNames": true,
-    "skipLibCheck": true,
     "removeComments": true,
+    "skipLibCheck": true,
+    "sourceMap": true
   },
-  "include": ["./src"],
+  "include": ["src", "import-meta-url.js"],
   "exclude": ["node_modules"]
 }

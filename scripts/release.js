@@ -33,7 +33,7 @@ if (operationName === CHOICES.CREATE) {
     await executeCommand(
       'gh',
       ['release', 'create', version, '-R', REPO, '--notes', version, '--latest', '--title', version, releasePath],
-      { stdio: 'inherit' }
+      { stdio: 'inherit' },
     );
   } catch (error) {
     // console.log(error);
