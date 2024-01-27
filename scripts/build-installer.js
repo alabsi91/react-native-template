@@ -102,7 +102,7 @@ const outFolder = 'installer',
       bundle: true,
       minify: true,
       define: { 'import.meta.url': 'import_meta_url' },
-      inject: ['./import-meta-url.js'],
+      banner: { js: "var import_meta_url = require('url').pathToFileURL(__filename);" },
       treeShaking: true,
     });
     progress('- JavaScript files Bundled successfully!');
