@@ -332,7 +332,7 @@ async function main() {
   // * copy react navigation template
   if (isReactNavigationSelected) {
     try {
-      await copyReactNavigationTemplate(inputs.name);
+      copyReactNavigationTemplate(inputs.name);
     } catch (error) {
       loading.error('Error while copying react navigation template !!');
     }
