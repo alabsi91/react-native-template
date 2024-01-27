@@ -152,11 +152,13 @@ export async function addBabelConfig(templateName: string) {
   const presetsMatch = regex.presets.exec(file) as RegExpMatchArrayWithIndices;
   const pluginsMatch = regex.plugins.exec(file) as RegExpMatchArrayWithIndices;
 
+  // insert babel plugins
   if (typeof pluginsMatch?.groups?.plugins === 'string') {
     const insertAt = pluginsMatch.indices[1][1];
-    file = file.slice(0, insertAt) + config.babelPlugins.map(e => `'${e}'`).join(',') + file.slice(insertAt);
+    file = file.slice(0, insertAt) + ',' + config.babelPlugins.map(e => `'${e}'`).join(',') + file.slice(insertAt);
   }
 
+  // insert babel presets
   if (typeof presetsMatch?.groups?.presets === 'string') {
     const insertAt = presetsMatch.indices[1][1];
     file = file.slice(0, insertAt) + config.babelPresets.map(e => `'${e}'`).join(',') + file.slice(insertAt);
