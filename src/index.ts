@@ -55,14 +55,13 @@ console.log(
 // ⚠️ For testing in development mode only
 if (CONSTANTS.isDev) {
   // Here you can test your CLI arguments while using hot reload in development mode.
-  testCliArgsInput('');
+  testCliArgsInput('--help');
 }
 
 async function main() {
   const options = Schema.createOptions({
     cliName: 'rn-template',
     description: 'Create new React-Native project.',
-    validateSchema: CONSTANTS.isDev,
     argsType: z.string().array().length(0).describe('No arguments are required or allowed.'),
     globalOptions: [
       {

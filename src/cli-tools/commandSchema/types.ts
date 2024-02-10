@@ -55,6 +55,12 @@ export type CommandSchema<A = ZodArray> = {
    */
   description?: string;
   /**
+   * - **Optional** `string`
+   * - The example of the command.
+   * - Used for generating the help message.
+   */
+  example?: string;
+  /**
    * - **Optional** `z.ZodArray`
    * - **Default** `z.string().array()`
    * - The arguments of the command.
@@ -75,7 +81,6 @@ export type CommandSchema<A = ZodArray> = {
    * - Make sure to not duplicate aliases and commands.
    */
   aliases?: string[];
-
   /**
    * - **Optional** `CommandOptions[]`
    * - The options of the command.
@@ -110,6 +115,18 @@ type CommandOptions = {
    * @see https://zod.dev/?id=types
    */
   type: AllowedOptionTypes;
+  /**
+   * - **Optional** `string`
+   * - The description of the option.
+   * - Used for generating the help message.
+   */
+  description?: string;
+  /**
+   * - **Optional** `string`
+   * - The example of the option.
+   * - Used for generating the help message.
+   */
+  example?: string;
   /**
    * - **Optional** `string[]`
    * - The aliases of the option, use CamelCase..
@@ -198,7 +215,56 @@ export type ParseOptions<A = ZodStringArray> = {
   usage?: string;
 };
 
+export type PrintHelpOptions<T = undefined> = {
+  /** Print only the specified command names */
+  includeCommands?: (T extends { schemas: Partial<{ command: string }>[] }
+    ? NonNullable<T['schemas'][number]['command']>
+    : string)[];
+
+  /** Whether to include the CLI description in the help message */
+  includeDescription?: boolean;
+
+  /** Whether to display the CLI usage information in the help message */
+  includeUsage?: boolean;
+
+  /** Whether to include global options in the help message */
+  includeGlobalOptions?: boolean;
+
+  /** Whether to include option descriptions in the help message */
+  includeOptionDescription?: boolean;
+
+  /** Whether to display option aliases in the help message */
+  includeOptionAliases?: boolean;
+
+  /** Whether to include option examples in the help message */
+  includeOptionExample?: boolean;
+
+  /** Whether to include command descriptions in the help message */
+  includeCommandDescription?: boolean;
+
+  /** Whether to include command aliases in the help message */
+  includeCommandAliases?: boolean;
+
+  /** Whether to include command examples in the help message */
+  includeCommandExample?: boolean;
+
+  /** Whether to include command arguments in the help message */
+  includeCommandArguments?: boolean;
+
+  /** Whether to include global arguments in the help message */
+  includeGlobalArguments?: boolean;
+
+  /** Whether to show the optional keyword when the option is optional */
+  showOptionalKeyword?: boolean;
+
+  /** Whether to show the required keyword when the option is required */
+  showRequiredKeyword?: boolean;
+
+  /** Whether to include the options type information in the help message */
+  includeOptionsType?: boolean;
+};
+
 export type ParseReturnType<T extends CommandSchema[]> = z.SafeParseReturnType<
   z.input<[SchemaToZodObjArr<T>[number], SchemaToZodObjArr<T>[number], ...SchemaToZodObjArr<T>][number]>,
   z.output<[SchemaToZodObjArr<T>[number], SchemaToZodObjArr<T>[number], ...SchemaToZodObjArr<T>][number]>
->;
+> & { schemas: T };

@@ -20,6 +20,6 @@
     "skipLibCheck": true,
     "sourceMap": true
   },
-  "include": ["src", "import-meta-url.js"],
+  "include": ["src"],
   "exclude": ["node_modules"]
 }
