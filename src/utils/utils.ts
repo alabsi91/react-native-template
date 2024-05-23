@@ -4,13 +4,7 @@ import { existsSync } from 'fs';
 import { copyFile, mkdir, readdir, stat } from 'fs/promises';
 import inquirer from 'inquirer';
 import path from 'path';
-
-export enum OS {
-  Android = 'android',
-  IOS = 'ios',
-  Web = 'web',
-  Windows = 'windows',
-}
+import { OS, type OSType } from '../types.js';
 
 /** Ask the user for the template project name */
 export async function askForProjectName(): Promise<string> {
@@ -40,7 +34,7 @@ export async function askForProjectName(): Promise<string> {
 
 /** - Ask the user which platforms to include */
 export async function askForPlatforms() {
-  const { platforms } = await inquirer.prompt<{ platforms: OS[] }>([
+  const { platforms } = await inquirer.prompt<{ platforms: OSType[] }>([
     {
       type: 'checkbox',
       name: 'platforms',

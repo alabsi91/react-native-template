@@ -6,9 +6,11 @@ declare global {
   }
 }
 
-export enum OS {
-  Android = 'Android',
-  IOS = 'IOS',
-  Web = 'Web',
-  Windows = 'Windows',
-}
+export const OS = {
+  Android: 'Android',
+  IOS: 'IOS',
+  Web: 'Web',
+  Windows: 'Windows',
+} as const;
+
+export type OSType = (typeof OS)[keyof typeof OS];

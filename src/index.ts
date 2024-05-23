@@ -10,7 +10,6 @@ import { spinner } from '@cli/spinner.js';
 import { $, CONSTANTS, testCliArgsInput } from '@cli/terminal.js';
 import Schema from '@schema';
 import {
-  OS,
   askForInstallingDeps,
   askForKeepingJest,
   askForPlatforms,
@@ -36,6 +35,7 @@ import {
   runVSCode,
 } from './methods.js';
 import config from './template.config.js';
+import { OS, type OSType } from './types.js';
 
 // ? 👇 title text gradient colors. for more colors see: `https://cssgradient.io/gradient-backgrounds`
 const coolGradient = gradient([
@@ -55,7 +55,7 @@ console.log(
 // ⚠️ For testing in development mode only
 if (CONSTANTS.isDev) {
   // Here you can test your CLI arguments while using hot reload in development mode.
-  testCliArgsInput('--help');
+  testCliArgsInput('');
 }
 
 async function main() {
@@ -124,7 +124,7 @@ async function main() {
     process.exit(0);
   }
 
-  const parsePlatform = platform ? (Array.from(new Set(platform.split(','))) as OS[]) : undefined;
+  const parsePlatform = platform ? (Array.from(new Set(platform.split(','))) as OSType[]) : undefined;
   const parsePreLibs = preLibs ? preLibs.trim().split(',').filter(Boolean) : undefined;
 
   // * get user inputs
@@ -176,7 +176,7 @@ async function main() {
   // * download template
   const loading = spinner('Downloading ...');
   try {
-    await $`npx -y react-native init "${inputs.name}" --skip-install`;
+    await $`npx -y @react-native-community/cli@latest init "${inputs.name}" --skip-install`;
   } catch (error) {
     loading.error('Error while downloading the template !!');
     process.exit(1);

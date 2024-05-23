@@ -7,7 +7,7 @@ import * as prettier from 'prettier';
 import { $, CONSTANTS } from '@cli/terminal.js';
 import { copyRecursive } from '@utils/utils.js';
 import config from './template.config.js';
-import { OS } from './types.js';
+import { OS, type OSType } from './types.js';
 
 const scriptPath = CONSTANTS.projectRoot;
 const templateDir = path.join(scriptPath, 'template');
@@ -68,7 +68,7 @@ export async function getPkgVersion(pkg: string) {
 }
 
 /** - Edit `package.json` file */
-export async function editPackageJson(templateName: string, platforms: OS[]) {
+export async function editPackageJson(templateName: string, platforms: OSType[]) {
   const packageJsonPath = path.join(templateName, 'package.json');
   const packageJson = await fs.readFile(packageJsonPath, { encoding: 'utf-8' });
   const json = JSON.parse(packageJson) as packageJsonType;
