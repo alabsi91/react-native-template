@@ -149,7 +149,6 @@ const config = {
         '@styles/*': ['src/styles/*'],
         '@types': ['src/Types'],
       },
-      importsNotUsedAsValues: 'error',
     },
   },
 };

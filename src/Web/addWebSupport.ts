@@ -6,13 +6,7 @@ import config from '../template.config.js';
 
 /** - Copy file from template folder for web platform */
 export async function webScript(templateName: string) {
-  config.babelPlugins.unshift(
-    ...[
-      '@babel/plugin-proposal-export-namespace-from',
-      '@babel/plugin-proposal-optional-chaining',
-      '@babel/plugin-transform-modules-commonjs',
-    ],
-  );
+  config.babelPlugins.unshift(...['@babel/plugin-proposal-export-namespace-from', '@babel/plugin-proposal-optional-chaining']);
 
   // modify index.js
   const indexPath = path.join(templateName, 'index.js');
