@@ -1,9 +1,9 @@
-import React, { forwardRef, useEffect, useImperativeHandle, useRef } from 'react';
-import { StyleSheet, TextInput } from 'react-native';
-import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from 'react-native-reanimated';
+import React, { forwardRef, useEffect, useImperativeHandle, useRef } from "react";
+import { StyleSheet, TextInput } from "react-native";
+import Animated, { useAnimatedStyle, useSharedValue, withSpring, withTiming } from "react-native-reanimated";
 
-import { fontFamily, useFontSize } from '@styles/Fonts';
-import { useTheme } from '@styles/Theme';
+import { fontFamily, useFontSize } from "@styles/Fonts";
+import { useTheme } from "@styles/Theme";
 
 import type {
   LayoutChangeEvent,
@@ -12,13 +12,13 @@ import type {
   TextInputChangeEventData,
   TextStyle,
   ViewStyle,
-} from 'react-native';
+} from "react-native";
 
 type Props = {
   style?: StyleProp<ViewStyle>;
   inputStyle?: StyleProp<TextStyle>;
   children?: React.ReactNode;
-} & TextInput['props'];
+} & TextInput["props"];
 
 export type AnimatedInputRef = {
   setText: (text: string) => void;
@@ -72,7 +72,7 @@ const AnimatedInput = forwardRef<AnimatedInputRef, Props>(
     }, [theme.isDark]);
 
     useEffect(() => {
-      if (!('value' in props)) return;
+      if (!("value" in props)) return;
 
       inputValue.current = props.value;
       inputRef.current.setNativeProps({ text: inputValue.current });
@@ -116,7 +116,8 @@ const AnimatedInput = forwardRef<AnimatedInputRef, Props>(
 
     const onInputLayout = (event: LayoutChangeEvent) => {
       titleTopPos.current = -(event.nativeEvent.layout.height + 2) / 2;
-      if (inputValue.current || inputRef.current.isFocused()) titlePos.value = withTiming(titleTopPos.current, { duration: 20 });
+      if (inputValue.current || inputRef.current.isFocused())
+        titlePos.value = withTiming(titleTopPos.current, { duration: 20 });
     };
 
     useImperativeHandle(ref, () => ({ setText, blur: () => inputRef.current.blur() }), []);
@@ -132,9 +133,9 @@ const AnimatedInput = forwardRef<AnimatedInputRef, Props>(
           onBlur={onInputBlur}
           onChangeText={onTextChange}
           cursorColor={theme.primary}
-          placeholder=''
+          placeholder=""
         />
-        <Animated.View style={[styles.titleContainer, titleContainerStyle]} pointerEvents='none'>
+        <Animated.View style={[styles.titleContainer, titleContainerStyle]} pointerEvents="none">
           <Animated.View style={[styles.line, titleBackgroundStyle, { backgroundColor: theme.background }]} />
           <Animated.Text style={[titleStyle, { fontSize: fontSize.normal, ...fontFamily.medium }]}>
             {placeholder}
@@ -143,29 +144,29 @@ const AnimatedInput = forwardRef<AnimatedInputRef, Props>(
         {children}
       </Animated.View>
     );
-  }
+  },
 );
 
 export default AnimatedInput;
 
 const styles = StyleSheet.create({
   container: {
-    position: 'relative',
-    justifyContent: 'center',
+    position: "relative",
+    justifyContent: "center",
     borderWidth: 2,
     borderRadius: 10,
     marginVertical: 10,
   },
   titleContainer: {
-    position: 'absolute',
+    position: "absolute",
     left: 20,
-    justifyContent: 'center',
-    alignItems: 'center',
+    justifyContent: "center",
+    alignItems: "center",
   },
   line: {
-    position: 'absolute',
-    width: '105%',
-    height: '100%',
+    position: "absolute",
+    width: "105%",
+    height: "100%",
   },
   input: {
     ...fontFamily.medium,

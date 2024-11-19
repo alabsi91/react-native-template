@@ -1,14 +1,14 @@
-import type { NativeStackScreenProps } from '@react-navigation/native-stack';
-import type React from 'react';
-import type { ImageSourcePropType } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import type { NativeStackScreenProps } from "@react-navigation/native-stack";
+import type React from "react";
+import type { ImageSourcePropType } from "react-native";
+import type { SvgProps } from "react-native-svg";
 
 declare global {
-  declare module '*.png' {
+  declare module "*.png" {
     const value: ImageSourcePropType;
     export default value;
   }
-  declare module '*.svg' {
+  declare module "*.svg" {
     const content: React.FC<SvgProps>;
     export default content;
   }
@@ -20,4 +20,4 @@ export type RootStackParamList = {
 };
 
 // Each screen's prop type
-export type HomeProps = NativeStackScreenProps<RootStackParamList, 'Home'>;
+export type HomeProps = NativeStackScreenProps<RootStackParamList, "Home">;

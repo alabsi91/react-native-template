@@ -1,6 +1,6 @@
-import * as React from 'react';
+import * as React from "react";
 
-import type { PortalMethods } from './PortalHost';
+import type { PortalMethods } from "./PortalHost";
 
 type Props = {
   manager: PortalMethods;
@@ -27,7 +27,8 @@ export default class PortalConsumer extends React.Component<Props> {
   private key: any;
 
   private checkManager() {
-    if (!this.props.manager) throw new Error('Looks like you forgot to wrap your root component with `Provider` component ');
+    if (!this.props.manager)
+      throw new Error("Looks like you forgot to wrap your root component with `Provider` component ");
   }
 
   render() {

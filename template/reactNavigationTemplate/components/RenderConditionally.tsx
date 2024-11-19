@@ -1,4 +1,4 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect } from "react";
 
 type Props = {
   if?: unknown;
@@ -8,7 +8,7 @@ type Props = {
 };
 
 export default function RenderConditionally(props: Props) {
-  const IF = 'if' in props ? Boolean(props.if) : true;
+  const IF = "if" in props ? Boolean(props.if) : true;
 
   const [isReady, setIsReady] = useState(props.withDelay ? false : IF);
 

@@ -1,16 +1,16 @@
-import { useWindowDimensions } from 'react-native';
+import { useWindowDimensions } from "react-native";
 
 export const fontFamily = {
-  light: { fontFamily: 'SignikaNegative', fontWeight: '300' },
-  regular: { fontFamily: 'SignikaNegative', fontWeight: '400' },
-  medium: { fontFamily: 'SignikaNegative', fontWeight: '500' },
-  semiBold: { fontFamily: 'SignikaNegative', fontWeight: '600' },
-  bold: { fontFamily: 'SignikaNegative', fontWeight: '700' },
+  light: { fontFamily: "SignikaNegative", fontWeight: "300" },
+  regular: { fontFamily: "SignikaNegative", fontWeight: "400" },
+  medium: { fontFamily: "SignikaNegative", fontWeight: "500" },
+  semiBold: { fontFamily: "SignikaNegative", fontWeight: "600" },
+  bold: { fontFamily: "SignikaNegative", fontWeight: "700" },
 } as const;
 
 /**
- * A React hook that returns a responsive font size depending on the window width
- * while ignoring device font scale settings.
+ * A React hook that returns a responsive font size depending on the window width while ignoring device font scale
+ * settings.
  */
 export function useFontSize() {
   const { width, fontScale } = useWindowDimensions();

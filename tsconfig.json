@@ -20,6 +20,5 @@
     "skipLibCheck": true,
     "sourceMap": true
   },
-  "include": ["src"],
-  "exclude": ["node_modules"]
+  "include": ["src"]
 }

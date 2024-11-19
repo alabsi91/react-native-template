@@ -1,13 +1,13 @@
-import fs from 'fs/promises';
-import path from 'path';
+import fs from "fs/promises";
+import path from "path";
 
 /** - Android enable separate build in gradle.build */
 export async function enableSeparateBuild(templateName: string) {
-  const pathToGradle = path.join(templateName, 'android', 'app', 'build.gradle');
-  const fileStr = await fs.readFile(pathToGradle, { encoding: 'utf-8' });
+  const pathToGradle = path.join(templateName, "android", "app", "build.gradle");
+  const fileStr = await fs.readFile(pathToGradle, { encoding: "utf-8" });
   const newStr = fileStr
     .replace(
-      'android {',
+      "android {",
       `android {
     splits {
         abi {
@@ -18,8 +18,8 @@ export async function enableSeparateBuild(templateName: string) {
         }
     }`,
     )
-    .replace(/\s*\/\*[\s\S]*?\*\//gm, '') // remove comment blocks
-    .replace(/\s*\/\/.*$/gm, ''); // remove inline comments
+    .replace(/\s*\/\*[\s\S]*?\*\//gm, "") // remove comment blocks
+    .replace(/\s*\/\/.*$/gm, ""); // remove inline comments
 
-  await fs.writeFile(pathToGradle, newStr, { encoding: 'utf-8' });
+  await fs.writeFile(pathToGradle, newStr, { encoding: "utf-8" });
 }

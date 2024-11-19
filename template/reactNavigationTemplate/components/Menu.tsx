@@ -1,4 +1,4 @@
-import React, { useEffect, useRef, useState } from 'react';
+import React, { useEffect, useRef, useState } from "react";
 import {
   BackHandler,
   Dimensions,
@@ -10,25 +10,25 @@ import {
   Text,
   useWindowDimensions,
   View,
-} from 'react-native';
-import Animated, { Easing, FadeInDown, FadeInUp, withTiming } from 'react-native-reanimated';
-import { useSafeAreaInsets } from 'react-native-safe-area-context';
+} from "react-native";
+import Animated, { Easing, FadeInDown, FadeInUp, withTiming } from "react-native-reanimated";
+import { useSafeAreaInsets } from "react-native-safe-area-context";
 
-import RenderConditionally from './RenderConditionally';
-import Portal from './Portal/Portal';
-import { useTheme } from '@theme';
-import { fontFamily, useFontSize } from '@fonts';
+import RenderConditionally from "./RenderConditionally";
+import Portal from "./Portal/Portal";
+import { useTheme } from "@theme";
+import { fontFamily, useFontSize } from "@fonts";
 
-import type { GestureResponderEvent, PressableProps, StyleProp, TextStyle, ViewStyle } from 'react-native';
-import type { EntryAnimationsValues, ExitAnimationsValues } from 'react-native-reanimated';
-import type { SvgProps } from 'react-native-svg';
+import type { GestureResponderEvent, PressableProps, StyleProp, TextStyle, ViewStyle } from "react-native";
+import type { EntryAnimationsValues, ExitAnimationsValues } from "react-native-reanimated";
+import type { SvgProps } from "react-native-svg";
 
 const isRTL = I18nManager.isRTL;
 
 type Props<T extends { label: string; value: unknown; icon?: React.FC<SvgProps> | number }> = {
   children?: React.ReactNode;
   data: T[];
-  selected?: T['value'];
+  selected?: T["value"];
   offsetX?: number;
   offsetY?: number;
   containerStyle?: StyleProp<ViewStyle>;
@@ -43,7 +43,7 @@ type Props<T extends { label: string; value: unknown; icon?: React.FC<SvgProps> 
 
   onMenuButtonPress?: (e: GestureResponderEvent) => void;
   onMenuButtonLongPress?: (e: GestureResponderEvent) => void;
-  onChange?: (value: T['value'], label: string) => void;
+  onChange?: (value: T["value"], label: string) => void;
 } & PressableProps;
 
 const AnimatedPressable = Animated.createAnimatedComponent(Pressable);
@@ -83,7 +83,9 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
 
   const [options, setOptions] = useState<POS>({ pageX: 0, pageY: 0, visible: false, maxHeight: screenHeight });
 
-  const currentScreenOrientation = useRef<'PORTRAIT' | 'LANDSCAPE'>(screenWidth < screenHeight ? 'PORTRAIT' : 'LANDSCAPE');
+  const currentScreenOrientation = useRef<"PORTRAIT" | "LANDSCAPE">(
+    screenWidth < screenHeight ? "PORTRAIT" : "LANDSCAPE",
+  );
 
   const renderItem = ({ item, index }: { item: (typeof data)[number]; index: number }) => {
     const onPress = () => {
@@ -93,9 +95,15 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
 
     const Icon = () => {
       // require
-      if (typeof item.icon === 'number') {
+      if (typeof item.icon === "number") {
         return (
-          <Image source={item.icon} style={{ width: iconSize, height: iconSize }} width={24} height={24} tintColor={theme.icon} />
+          <Image
+            source={item.icon}
+            style={{ width: iconSize, height: iconSize }}
+            width={24}
+            height={24}
+            tintColor={theme.icon}
+          />
         );
       }
 
@@ -108,20 +116,28 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
     };
 
     const dividerStyle =
-      index !== data.length - 1 ? { borderBottomWidth: 1, borderBottomColor: dividerColor ?? theme.background + '80' } : {};
+      index !== data.length - 1
+        ? { borderBottomWidth: 1, borderBottomColor: dividerColor ?? theme.background + "80" }
+        : {};
 
     return (
       <Pressable onPress={onPress} android_ripple={{ color: theme.primary }}>
         <Animated.View
-          style={[styles.menuItem, dividerStyle, { backgroundColor: item.value === selected ? theme.primary + '20' : undefined }]}
-          entering={preferUpward ? FadeInDown.delay(6 * data.length - (index + 1) * 6) : FadeInUp.delay((index + 1) * 6)}
+          style={[
+            styles.menuItem,
+            dividerStyle,
+            { backgroundColor: item.value === selected ? theme.primary + "20" : undefined },
+          ]}
+          entering={
+            preferUpward ? FadeInDown.delay(6 * data.length - (index + 1) * 6) : FadeInUp.delay((index + 1) * 6)
+          }
         >
           <RenderConditionally if={renderIcons}>
             <Icon />
           </RenderConditionally>
 
           <Text
-            style={[{ color: theme.text, fontSize, ...fontFamily.bold, textAlign: 'center' }, textStyle]}
+            style={[{ color: theme.text, fontSize, ...fontFamily.bold, textAlign: "center" }, textStyle]}
             numberOfLines={1}
             adjustsFontSizeToFit
           >
@@ -133,7 +149,7 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
   };
 
   const calculatePos = (pageX: number, pageY: number, width: number, height: number) => {
-    'worklet';
+    "worklet";
     const isEnoughSpaceDownward = pageY + height + offsetY < screenHeight - navbarHeight;
     const isEnoughSpaceUpward = pageY - height - offsetY > statusbarHeight;
 
@@ -190,11 +206,13 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
 
     // Choose the longest part (upward or downward)
     const isDownwardLongest = pageY <= screenHeight / 2;
-    const maxHeight = isDownwardLongest ? screenHeight - navbarHeight - pageY - offsetY : pageY - offsetY - statusbarHeight;
+    const maxHeight = isDownwardLongest
+      ? screenHeight - navbarHeight - pageY - offsetY
+      : pageY - offsetY - statusbarHeight;
 
     setOptions({ pageX, pageY, maxHeight, visible: true });
 
-    currentScreenOrientation.current = screenWidth < screenHeight ? 'PORTRAIT' : 'LANDSCAPE';
+    currentScreenOrientation.current = screenWidth < screenHeight ? "PORTRAIT" : "LANDSCAPE";
 
     if (openOnLongPress) {
       onMenuButtonLongPress?.(e);
@@ -208,8 +226,8 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
     if (!options.visible) return;
 
     // close the menu when screen orientation change
-    const unsubscribe = Dimensions.addEventListener('change', ({ screen: { width, height } }) => {
-      const orientation: 'PORTRAIT' | 'LANDSCAPE' = width < height ? 'PORTRAIT' : 'LANDSCAPE';
+    const unsubscribe = Dimensions.addEventListener("change", ({ screen: { width, height } }) => {
+      const orientation: "PORTRAIT" | "LANDSCAPE" = width < height ? "PORTRAIT" : "LANDSCAPE";
       if (currentScreenOrientation.current !== orientation) {
         close();
         currentScreenOrientation.current = orientation;
@@ -221,7 +239,7 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
       close();
       return true;
     };
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
     return () => {
       backHandler.remove();
@@ -230,8 +248,13 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
   }, [options.visible]);
 
   const EnteringAnimation = (values: EntryAnimationsValues) => {
-    'worklet';
-    const { x, y, isUpward, isRightward } = calculatePos(options.pageX, options.pageY, values.targetWidth, values.targetHeight);
+    "worklet";
+    const { x, y, isUpward, isRightward } = calculatePos(
+      options.pageX,
+      options.pageY,
+      values.targetWidth,
+      values.targetHeight,
+    );
 
     const initialValues = {
       opacity: 0,
@@ -260,7 +283,7 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
   };
 
   const ExitingAnimation = (values: ExitAnimationsValues) => {
-    'worklet';
+    "worklet";
     const { x, y, isUpward } = calculatePos(options.pageX, options.pageY, values.currentWidth, values.currentHeight);
 
     const initialValues = {
@@ -301,7 +324,7 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
           <Pressable onPress={close} style={styles.bg} />
 
           {/* the wrapper to center the container in the middle */}
-          <View style={styles.bg} pointerEvents='box-none'>
+          <View style={styles.bg} pointerEvents="box-none">
             <Animated.View
               entering={EnteringAnimation}
               exiting={ExitingAnimation}
@@ -322,22 +345,22 @@ export default function Menu<T extends { label: string; value: unknown; icon?: R
 
 const styles = StyleSheet.create({
   bg: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   menuContainer: {
-    position: 'absolute',
+    position: "absolute",
     borderRadius: 10,
     borderWidth: 1,
-    borderColor: '#6662',
-    overflow: 'hidden',
+    borderColor: "#6662",
+    overflow: "hidden",
   },
   menuItem: {
-    flexDirection: 'row',
-    alignItems: 'center',
+    flexDirection: "row",
+    alignItems: "center",
     gap: 10,
     paddingHorizontal: 16,
     paddingVertical: 10,

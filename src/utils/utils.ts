@@ -1,26 +1,22 @@
-import config from '@/template.config.js';
-import chalk from 'chalk';
-import { existsSync } from 'fs';
-import { copyFile, mkdir, readdir, stat } from 'fs/promises';
-import inquirer from 'inquirer';
-import path from 'path';
-import { OS, type OSType } from '../types.js';
+import config from "@/template.config.js";
+import chalk from "chalk";
+import { existsSync } from "fs";
+import { copyFile, mkdir, readdir, stat } from "fs/promises";
+import { input, checkbox, confirm } from "@inquirer/prompts";
+import path from "path";
+import { OS, type OSType } from "../types.js";
 
 /** Ask the user for the template project name */
 export async function askForProjectName(): Promise<string> {
-  const { name } = await inquirer.prompt<{ name: string }>([
-    {
-      type: 'input',
-      name: 'name',
-      default: 'myproject',
-      message: 'Please enter the new project name : ',
-    },
-  ]);
+  const name = await input({
+    default: "myproject",
+    message: "Please enter the new project name : ",
+  });
 
   try {
     validateProjectName(name);
   } catch (error) {
-    console.log('\n⛔', chalk.red.bold(error), '\n');
+    console.log("\n⛔", chalk.red.bold(error), "\n");
     return askForProjectName();
   }
 
@@ -34,63 +30,46 @@ export async function askForProjectName(): Promise<string> {
 
 /** - Ask the user which platforms to include */
 export async function askForPlatforms() {
-  const { platforms } = await inquirer.prompt<{ platforms: OSType[] }>([
-    {
-      type: 'checkbox',
-      name: 'platforms',
-      default: [true, false],
-      choices: [
-        { checked: true, name: OS.Android },
-        { checked: false, name: OS.IOS },
-        { checked: false, name: OS.Web },
-        { checked: false, name: OS.Windows },
-      ],
-      message: 'Please choose the template platforms : ',
-    },
-  ]);
+  const platforms = await checkbox<OSType>({
+    choices: [
+      { checked: true, value: OS.Android },
+      { checked: false, value: OS.IOS },
+      { checked: false, value: OS.Web },
+      { checked: false, value: OS.Windows },
+    ],
+    message: "Please choose the template platforms : ",
+  });
 
   return platforms;
 }
 
 /** - Ask the user if to install dependencies */
 export async function askForInstallingDeps() {
-  const { installDeps } = await inquirer.prompt<{ installDeps: boolean }>([
-    {
-      type: 'confirm',
-      name: 'installDeps',
-      default: true,
-      message: 'Do you want to install the dependencies : ',
-    },
-  ]);
+  const installDeps = await confirm({
+    default: true,
+    message: "Do you want to install the dependencies : ",
+  });
 
   return installDeps;
 }
 
 /** - Ask the user if to keep jest */
 export async function askForKeepingJest() {
-  const { keepJest } = await inquirer.prompt<{ keepJest: boolean }>([
-    {
-      type: 'confirm',
-      name: 'keepJest',
-      default: false,
-      message: 'Do you want to keep jest : ',
-    },
-  ]);
+  const keepJest = await confirm({
+    default: false,
+    message: "Do you want to keep jest : ",
+  });
 
   return keepJest;
 }
 
 /** - Ask the user for pre-installed libraries */
 export async function askForPreInstalledLibs() {
-  const { libs } = await inquirer.prompt<{ libs: string[] }>([
-    {
-      type: 'checkbox',
-      name: 'libs',
-      pageSize: config.preLibs.length,
-      choices: config.preLibs.map(l => ({ name: l })),
-      message: 'Choose what library to pre-install : ',
-    },
-  ]);
+  const libs = await checkbox<string>({
+    pageSize: config.preLibs.length,
+    choices: config.preLibs.map(l => ({ value: l })),
+    message: "Choose what library to pre-install : ",
+  });
 
   return libs;
 }
@@ -117,59 +96,59 @@ export async function copyRecursive(source: string, target: string): Promise<voi
 const NAME_REGEX = /^[$A-Z_][0-9A-Z_$]*$/i;
 // ref: https://docs.oracle.com/javase/tutorial/java/nutsandbolts/_keywords.html
 const javaKeywords = [
-  'abstract',
-  'continue',
-  'for',
-  'new',
-  'switch',
-  'assert',
-  'default',
-  'goto',
-  'package',
-  'synchronized',
-  'boolean',
-  'do',
-  'if',
-  'private',
-  'this',
-  'break',
-  'double',
-  'implements',
-  'protected',
-  'throw',
-  'byte',
-  'else',
-  'import',
-  'public',
-  'throws',
-  'case',
-  'enum',
-  'instanceof',
-  'return',
-  'transient',
-  'catch',
-  'extends',
-  'int',
-  'short',
-  'try',
-  'char',
-  'final',
-  'interface',
-  'static',
-  'void',
-  'class',
-  'finally',
-  'long',
-  'strictfp',
-  'volatile',
-  'const',
-  'float',
-  'native',
-  'super',
-  'while',
+  "abstract",
+  "continue",
+  "for",
+  "new",
+  "switch",
+  "assert",
+  "default",
+  "goto",
+  "package",
+  "synchronized",
+  "boolean",
+  "do",
+  "if",
+  "private",
+  "this",
+  "break",
+  "double",
+  "implements",
+  "protected",
+  "throw",
+  "byte",
+  "else",
+  "import",
+  "public",
+  "throws",
+  "case",
+  "enum",
+  "instanceof",
+  "return",
+  "transient",
+  "catch",
+  "extends",
+  "int",
+  "short",
+  "try",
+  "char",
+  "final",
+  "interface",
+  "static",
+  "void",
+  "class",
+  "finally",
+  "long",
+  "strictfp",
+  "volatile",
+  "const",
+  "float",
+  "native",
+  "super",
+  "while",
 ];
 
-const reservedNames = ['react', 'react-native', ...javaKeywords];
+const reservedNames = ["react", "react-native", ...javaKeywords];
 
 export function validateProjectName(name: string) {
   if (!String(name).match(NAME_REGEX)) {
@@ -182,6 +161,8 @@ export function validateProjectName(name: string) {
   }
 
   if (name.match(/helloworld/gi)) {
-    throw new Error('Project name shouldn\'t contain "HelloWorld" name in it, because it is CLI\'s default placeholder name.');
+    throw new Error(
+      "Project name shouldn't contain \"HelloWorld\" name in it, because it is CLI's default placeholder name.",
+    );
   }
 }

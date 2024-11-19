@@ -1,12 +1,12 @@
-import React from 'react';
-import { Image, Pressable, StyleSheet, Text, View } from 'react-native';
+import React from "react";
+import { Image, Pressable, StyleSheet, Text, View } from "react-native";
 
-import { fontFamily, useFontSize } from '@styles/Fonts';
-import { useTheme } from '@styles/Theme';
-import RenderConditionally from './RenderConditionally';
+import { fontFamily, useFontSize } from "@styles/Fonts";
+import { useTheme } from "@styles/Theme";
+import RenderConditionally from "./RenderConditionally";
 
-import type { GestureResponderEvent, StyleProp, ViewStyle } from 'react-native';
-import type { SvgProps } from 'react-native-svg';
+import type { GestureResponderEvent, StyleProp, ViewStyle } from "react-native";
+import type { SvgProps } from "react-native-svg";
 
 type Props = {
   title?: string;
@@ -23,9 +23,15 @@ export default function Button({ title, onPress, style, disabled, icon }: Props)
   // eslint-disable-next-line react/no-unstable-nested-components
   const Icon = () => {
     // require
-    if (typeof icon === 'number') {
+    if (typeof icon === "number") {
       return (
-        <Image style={[styles.icon, { width: 20, height: 20 }]} source={icon} width={24} height={24} tintColor={theme.header} />
+        <Image
+          style={[styles.icon, { width: 20, height: 20 }]}
+          source={icon}
+          width={24}
+          height={24}
+          tintColor={theme.header}
+        />
       );
     }
 
@@ -39,13 +45,23 @@ export default function Button({ title, onPress, style, disabled, icon }: Props)
 
   return (
     <View style={[styles.button, { backgroundColor: theme.primary }, style]}>
-      <Pressable style={styles.pressable} onPress={onPress} disabled={disabled} android_ripple={{ color: theme.primary + '50' }}>
+      <Pressable
+        style={styles.pressable}
+        onPress={onPress}
+        disabled={disabled}
+        android_ripple={{ color: theme.primary + "50" }}
+      >
         <RenderConditionally if={icon}>
           <Icon />
         </RenderConditionally>
 
         <RenderConditionally if={title}>
-          <Text style={[styles.text, { color: theme.background, paddingHorizontal: icon ? 20 : 0, fontSize: fontSize.normal }]}>
+          <Text
+            style={[
+              styles.text,
+              { color: theme.background, paddingHorizontal: icon ? 20 : 0, fontSize: fontSize.normal },
+            ]}
+          >
             {title}
           </Text>
         </RenderConditionally>
@@ -56,11 +72,11 @@ export default function Button({ title, onPress, style, disabled, icon }: Props)
 
 const styles = StyleSheet.create({
   button: {
-    position: 'relative',
+    position: "relative",
     borderRadius: 10,
-    overflow: 'hidden',
+    overflow: "hidden",
 
-    shadowColor: '#191919',
+    shadowColor: "#191919",
     shadowOffset: {
       width: 0,
       height: 1,
@@ -70,19 +86,19 @@ const styles = StyleSheet.create({
     elevation: 1,
   },
   pressable: {
-    flexDirection: 'row',
+    flexDirection: "row",
     paddingVertical: 10,
     paddingHorizontal: 20,
-    alignItems: 'center',
+    alignItems: "center",
   },
   text: {
     ...fontFamily.regular,
     flexGrow: 1,
     fontSize: 16,
-    textAlign: 'center',
+    textAlign: "center",
   },
   icon: {
-    position: 'absolute',
+    position: "absolute",
     left: 10,
   },
 });

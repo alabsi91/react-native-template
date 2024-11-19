@@ -1,11 +1,11 @@
-import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import * as React from "react";
+import { View, StyleSheet } from "react-native";
 
 type State = {
   portals: { key: number; children: React.ReactNode }[];
 };
 
-/** Portal host is the component which actually renders all Portals.*/
+/** Portal host is the component which actually renders all Portals. */
 export default class PortalManager extends React.PureComponent<object, State> {
   state: State = { portals: [] };
 
@@ -23,7 +23,7 @@ export default class PortalManager extends React.PureComponent<object, State> {
 
   render() {
     return this.state.portals.map(({ key, children }) => (
-      <View key={key} collapsable={false} pointerEvents='box-none' style={StyleSheet.absoluteFill}>
+      <View key={key} collapsable={false} pointerEvents="box-none" style={StyleSheet.absoluteFill}>
         {children}
       </View>
     ));

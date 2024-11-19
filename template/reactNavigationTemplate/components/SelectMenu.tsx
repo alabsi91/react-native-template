@@ -1,21 +1,21 @@
-import { BlurView } from '@react-native-community/blur';
-import React, { useEffect, useState } from 'react';
-import { BackHandler, FlatList, Image, Pressable, StyleSheet, Text, View } from 'react-native';
-import Animated, { Easing, FadeIn, FadeOut, FadeOutDown, ZoomInDown } from 'react-native-reanimated';
+import { BlurView } from "@react-native-community/blur";
+import React, { useEffect, useState } from "react";
+import { BackHandler, FlatList, Image, Pressable, StyleSheet, Text, View } from "react-native";
+import Animated, { Easing, FadeIn, FadeOut, FadeOutDown, ZoomInDown } from "react-native-reanimated";
 
-import radioCheckedIcon from '@assets/icons/radio_checked.png';
-import radioUncheckedIcon from '@assets/icons/radio_unchecked.png';
-import { fontFamily, useFontSize } from '@styles/Fonts';
-import { useTheme } from '@styles/Theme';
-import Portal from './Portal/Portal';
-import RenderConditionally from './RenderConditionally';
+import radioCheckedIcon from "@assets/icons/radio_checked.png";
+import radioUncheckedIcon from "@assets/icons/radio_unchecked.png";
+import { fontFamily, useFontSize } from "@styles/Fonts";
+import { useTheme } from "@styles/Theme";
+import Portal from "./Portal/Portal";
+import RenderConditionally from "./RenderConditionally";
 
 type Props<T extends { label: string; value: unknown }> = {
   children?: React.FC<{ label: string }>;
   data: T[];
-  defaultValue?: T['value'];
+  defaultValue?: T["value"];
   disableRadioIconRendering?: boolean;
-  onChange?: (value: T['value'], label: string) => void;
+  onChange?: (value: T["value"], label: string) => void;
 };
 
 export default function SelectMenu<T extends { label: string; value: unknown }>({
@@ -42,7 +42,7 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
 
       // Value is not unique
       if (valueSet.has(value)) {
-        console.error('SelectMenu: The values passed in the data should be unique.');
+        console.error("SelectMenu: The values passed in the data should be unique.");
         return;
       }
 
@@ -76,12 +76,24 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
         <RenderConditionally if={!disableRadioIconRendering}>
           {/* unchecked radio button */}
           <RenderConditionally if={!isSelected}>
-            <Image source={radioUncheckedIcon} style={{ width: 24, height: 24 }} width={40} height={40} tintColor={theme.icon} />
+            <Image
+              source={radioUncheckedIcon}
+              style={{ width: 24, height: 24 }}
+              width={40}
+              height={40}
+              tintColor={theme.icon}
+            />
           </RenderConditionally>
 
           {/* checked radio button */}
           <RenderConditionally if={isSelected}>
-            <Image source={radioCheckedIcon} style={{ width: 24, height: 24 }} width={40} height={40} tintColor={theme.primary} />
+            <Image
+              source={radioCheckedIcon}
+              style={{ width: 24, height: 24 }}
+              width={40}
+              height={40}
+              tintColor={theme.primary}
+            />
           </RenderConditionally>
         </RenderConditionally>
       </Pressable>
@@ -97,7 +109,7 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
       return true;
     };
 
-    const backHandler = BackHandler.addEventListener('hardwareBackPress', backAction);
+    const backHandler = BackHandler.addEventListener("hardwareBackPress", backAction);
 
     return () => backHandler.remove();
   }, [visible]);
@@ -114,14 +126,14 @@ export default function SelectMenu<T extends { label: string; value: unknown }>(
         <Portal>
           {/* blurry background with fade animation*/}
           <Animated.View style={styles.bg} entering={FadeIn} exiting={FadeOut.duration(200)}>
-            <BlurView style={{ flex: 1 }} blurType='dark' blurAmount={5} />
+            <BlurView style={{ flex: 1 }} blurType="dark" blurAmount={5} />
           </Animated.View>
 
           {/* press out side to close */}
           <Pressable onPress={hide} style={styles.bg} />
 
           {/* the wrapper to center the container in the middle */}
-          <View style={styles.wrapper} pointerEvents='box-none'>
+          <View style={styles.wrapper} pointerEvents="box-none">
             <Animated.View
               style={[styles.menuContainer, { backgroundColor: theme.header, borderColor: theme.shadow }]}
               entering={ZoomInDown.easing(Easing.elastic(0.7))}
@@ -141,7 +153,7 @@ function Separator() {
   return <View style={{ height: 1, backgroundColor: background }} />;
 }
 
-function OpenButtonDefault({ label = '' }) {
+function OpenButtonDefault({ label = "" }) {
   const theme = useTheme();
   const fontSize = useFontSize();
 
@@ -153,7 +165,7 @@ function OpenButtonDefault({ label = '' }) {
         paddingHorizontal: 20,
         paddingVertical: 10,
         borderRadius: 10,
-        textAlign: 'center',
+        textAlign: "center",
         fontSize: fontSize.normal,
         ...fontFamily.regular,
       }}
@@ -165,28 +177,28 @@ function OpenButtonDefault({ label = '' }) {
 
 const styles = StyleSheet.create({
   bg: {
-    position: 'absolute',
+    position: "absolute",
     top: 0,
     left: 0,
-    width: '100%',
-    height: '100%',
+    width: "100%",
+    height: "100%",
   },
   wrapper: {
-    position: 'relative',
+    position: "relative",
     flex: 1,
-    paddingHorizontal: '10%',
-    justifyContent: 'center',
-    alignItems: 'center',
+    paddingHorizontal: "10%",
+    justifyContent: "center",
+    alignItems: "center",
   },
   menuContainer: {
     borderRadius: 10,
     borderWidth: 1,
-    width: '100%',
-    maxHeight: '85%',
+    width: "100%",
+    maxHeight: "85%",
     minHeight: 55,
-    overflow: 'hidden',
+    overflow: "hidden",
 
-    shadowColor: '#000000',
+    shadowColor: "#000000",
     shadowOffset: {
       width: 0,
       height: 1,
@@ -198,8 +210,8 @@ const styles = StyleSheet.create({
   menuItem: {
     paddingHorizontal: 20,
     paddingVertical: 10,
-    flexDirection: 'row',
-    alignItems: 'center',
-    justifyContent: 'space-between',
+    flexDirection: "row",
+    alignItems: "center",
+    justifyContent: "space-between",
   },
 });

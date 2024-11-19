@@ -1,8 +1,8 @@
-import * as React from 'react';
+import * as React from "react";
 
-import PortalConsumer from './PortalConsumer';
-import type { PortalMethods } from './PortalHost';
-import PortalHost, { PortalContext } from './PortalHost';
+import PortalConsumer from "./PortalConsumer";
+import type { PortalMethods } from "./PortalHost";
+import PortalHost, { PortalContext } from "./PortalHost";
 
 export type Props = {
   children: React.ReactNode;

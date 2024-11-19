@@ -1,6 +1,6 @@
-import MaterialYou from 'react-native-material-you-colors';
+import MaterialYou from "react-native-material-you-colors";
 
-import type { MaterialYouPalette } from 'react-native-material-you-colors';
+import type { MaterialYouPalette } from "react-native-material-you-colors";
 
 function mapPaletteToTheme(palette: MaterialYouPalette) {
   const light = {
@@ -13,7 +13,7 @@ function mapPaletteToTheme(palette: MaterialYouPalette) {
     textFaded: palette.system_neutral2[9],
 
     BorW: palette.system_accent1[12],
-    shadow: '#ddd',
+    shadow: "#ddd",
 
     background: palette.system_neutral1[1],
     header: palette.system_neutral1[2],
@@ -31,7 +31,7 @@ function mapPaletteToTheme(palette: MaterialYouPalette) {
     textFaded: palette.system_neutral2[2],
 
     BorW: palette.system_accent1[0],
-    shadow: '#222',
+    shadow: "#222",
 
     background: palette.system_neutral1[11],
     header: palette.system_neutral1[10],

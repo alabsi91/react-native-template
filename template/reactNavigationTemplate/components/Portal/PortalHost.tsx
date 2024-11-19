@@ -1,16 +1,16 @@
-import * as React from 'react';
-import { View, StyleSheet } from 'react-native';
+import * as React from "react";
+import { View, StyleSheet } from "react-native";
 
-import PortalManager from './PortalManager';
+import PortalManager from "./PortalManager";
 
 export type Props = {
   children: React.ReactNode;
 };
 
 type Operation =
-  | { type: 'mount'; key: number; children: React.ReactNode }
-  | { type: 'update'; key: number; children: React.ReactNode }
-  | { type: 'unmount'; key: number };
+  | { type: "mount"; key: number; children: React.ReactNode }
+  | { type: "update"; key: number; children: React.ReactNode }
+  | { type: "unmount"; key: number };
 
 export type PortalMethods = {
   mount: (children: React.ReactNode) => number;
@@ -21,7 +21,7 @@ export type PortalMethods = {
 export const PortalContext = React.createContext<PortalMethods>(null!);
 
 export default class PortalHost extends React.Component<Props> {
-  static displayName = 'Portal.Host';
+  static displayName = "Portal.Host";
 
   componentDidMount() {
     const manager = this.manager;
@@ -31,13 +31,13 @@ export default class PortalHost extends React.Component<Props> {
       const action = queue.pop();
       if (action) {
         switch (action.type) {
-          case 'mount':
+          case "mount":
             manager.mount(action.key, action.children);
             break;
-          case 'update':
+          case "update":
             manager.update(action.key, action.children);
             break;
-          case 'unmount':
+          case "unmount":
             manager.unmount(action.key);
             break;
         }
@@ -55,7 +55,7 @@ export default class PortalHost extends React.Component<Props> {
     if (this.manager) {
       this.manager.mount(key, children);
     } else {
-      this.queue.push({ type: 'mount', key, children });
+      this.queue.push({ type: "mount", key, children });
     }
 
     return key;
@@ -65,8 +65,8 @@ export default class PortalHost extends React.Component<Props> {
     if (this.manager) {
       this.manager.update(key, children);
     } else {
-      const op: Operation = { type: 'mount', key, children };
-      const index = this.queue.findIndex(o => o.type === 'mount' || (o.type === 'update' && o.key === key));
+      const op: Operation = { type: "mount", key, children };
+      const index = this.queue.findIndex(o => o.type === "mount" || (o.type === "update" && o.key === key));
 
       if (index > -1) {
         this.queue[index] = op;
@@ -80,7 +80,7 @@ export default class PortalHost extends React.Component<Props> {
     if (this.manager) {
       this.manager.unmount(key);
     } else {
-      this.queue.push({ type: 'unmount', key });
+      this.queue.push({ type: "unmount", key });
     }
   };
 
@@ -91,7 +91,7 @@ export default class PortalHost extends React.Component<Props> {
   render() {
     return (
       <PortalContext.Provider value={{ mount: this.mount, update: this.update, unmount: this.unmount }}>
-        <View style={styles.container} collapsable={false} pointerEvents='box-none'>
+        <View style={styles.container} collapsable={false} pointerEvents="box-none">
           {this.props.children}
         </View>
         <PortalManager ref={this.setManager} />
