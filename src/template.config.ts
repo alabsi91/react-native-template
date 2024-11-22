@@ -28,7 +28,7 @@ const config = {
   ],
 
   eslint: {
-    extends: ["@react-native", "plugin:@typescript-eslint/recommended"],
+    extends: ["@react-native", "plugin:@typescript-eslint/recommended", "plugin:prettier/recommended"],
     ignorePatterns: ["*.js"],
     rules: {
       curly: 0,
@@ -56,7 +56,7 @@ const config = {
     bracketSpacing: true,
     bracketSameLine: false,
     endOfLine: "lf" as const,
-    singleQuote: true,
+    singleQuote: false,
   },
 
   preLibs: [
@@ -94,6 +94,9 @@ const config = {
     ["rn-tools", "github:alabsi91/react-native-tools-cli"],
     ["patch-package", "latest"],
     ["@typescript-eslint/eslint-plugin", "latest"],
+    ["@typescript-eslint/parser", "latest"],
+    ["prettier", "latest"],
+    ["eslint-plugin-prettier", "latest"],
     ["babel-plugin-transform-remove-console", "latest"],
     ["babel-plugin-module-resolver", "latest"],
     ["inquirer", "8.0.0"],
